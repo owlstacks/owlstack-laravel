@@ -1,15 +1,18 @@
 {
-    "name": "alihesari/larasap",
-    "description": "Laravel social auto posting (Larasap) lets you automatically post all your content to social networks such as Telegram Channel, X (Twitter), and Facebook.",
+    "name": "synglify/synglify-laravel",
+    "description": "Laravel integration for Synglify — publish content to Telegram, X (Twitter), and Facebook from your Laravel application.",
     "type": "library",
     "license": "MIT",
     "keywords": [
         "laravel",
-        "social network",
+        "synglify",
+        "social-media",
         "telegram",
         "twitter",
         "x",
-        "facebook"
+        "facebook",
+        "content-syndication",
+        "publishing"
     ],
     "authors": [
         {
@@ -20,35 +23,44 @@
         }
     ],
     "require": {
-        "php": "^8.0",
-        "facebook/graph-sdk": "^5.1",
-        "facebook/php-business-sdk": "^16.0",
-        "illuminate/support": "^8.0|^9.0|^10.0|^11.0|^12.0"
+        "php": "^8.1",
+        "synglify/synglify-core": "@dev",
+        "illuminate/support": "^10.0|^11.0|^12.0",
+        "illuminate/contracts": "^10.0|^11.0|^12.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.0",
-        "orchestra/testbench": "^6.0|^7.0|^8.0|^9.0"
+        "phpunit/phpunit": "^10.0|^11.0",
+        "orchestra/testbench": "^8.0|^9.0|^10.0"
     },
     "autoload": {
         "psr-4": {
-            "Alihesari\\Larasap\\": "src/"
+            "Synglify\\Laravel\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Alihesari\\Larasap\\Tests\\": "tests/"
+            "Synglify\\Laravel\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Alihesari\\Larasap\\LarasapServiceProvider"
+                "Synglify\\Laravel\\SynglifyServiceProvider"
             ],
             "aliases": {
-                "X": "Alihesari\\Larasap\\Facades\\X"
+                "Synglify": "Synglify\\Laravel\\Facades\\Synglify"
             }
         }
     },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../synglify-core",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
     "minimum-stability": "dev",
     "prefer-stable": true,
     "config": {
