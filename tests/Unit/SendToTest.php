@@ -1,352 +1,367 @@
 <?php
 
-namespace Alihesari\Larasap\Tests\Unit;
+declare(strict_types=1);
 
-use Alihesari\Larasap\Tests\TestCase;
-use Alihesari\Larasap\SendTo;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Http;
-use Alihesari\Larasap\Services\Telegram\Api;
-use Alihesari\Larasap\Services\X\Api as XApi;
-use Alihesari\Larasap\Services\Facebook\Api as FacebookApi;
+namespace Synglify\Laravel\Tests\Unit;
+
+use Synglify\Laravel\SendTo;
+use Synglify\Laravel\Tests\TestCase;
 
 class SendToTest extends TestCase
 {
-    protected function setUp(): void
+    // ── Telegram ─────────────────────────────────────────────────────────
+
+    public function testTelegramTextMessage(): void
     {
-        parent::setUp();
-        
-        // Enable test mode for all APIs
-        Api::enableTestMode();
-        XApi::enableTestMode();
-        FacebookApi::enableTestMode();
+        $this->httpClient
+            ->expects($this->once())
+            ->method('post')
+            ->with(
+                $this->stringContains('test-token-123/sendMessage'),
+                $this->callback(function (array $options) {
+                    $p = $options['form_params'];
+                    return $p['chat_id'] === '@test_channel'
+                        && str_contains($p['text'], 'Hello Telegram');
+                }),
+            )
+            ->willReturn($this->telegramSuccess());
 
-        // Mock HTTP responses
-        Http::fake([
-            // Telegram API mocks
-            'https://api.telegram.org/bot123456789:test_token/sendMessage' => Http::response([
-                'ok' => true,
-                'result' => ['message_id' => 123]
-            ], 200),
-            'https://api.telegram.org/bot123456789:test_token/sendPhoto' => Http::response([
-                'ok' => true,
-                'result' => ['message_id' => 123]
-            ], 200),
-            'https://api.telegram.org/bot123456789:test_token/sendAudio' => Http::response([
-                'ok' => true,
-                'result' => ['message_id' => 123]
-            ], 200),
-            'https://api.telegram.org/bot123456789:test_token/sendDocument' => Http::response([
-                'ok' => true,
-                'result' => ['message_id' => 123]
-            ], 200),
-            'https://api.telegram.org/bot123456789:test_token/sendVideo' => Http::response([
-                'ok' => true,
-                'result' => ['message_id' => 123]
-            ], 200),
-            'https://api.telegram.org/bot123456789:test_token/sendVoice' => Http::response([
-                'ok' => true,
-                'result' => ['message_id' => 123]
-            ], 200),
-            'https://api.telegram.org/bot123456789:test_token/sendMediaGroup' => Http::response([
-                'ok' => true,
-                'result' => [
-                    ['message_id' => 123],
-                    ['message_id' => 124]
-                ]
-            ], 200),
-            'https://api.telegram.org/bot123456789:test_token/sendLocation' => Http::response([
-                'ok' => true,
-                'result' => ['message_id' => 123]
-            ], 200),
-            'https://api.telegram.org/bot123456789:test_token/sendVenue' => Http::response([
-                'ok' => true,
-                'result' => ['message_id' => 123]
-            ], 200),
-            'https://api.telegram.org/bot123456789:test_token/sendContact' => Http::response([
-                'ok' => true,
-                'result' => ['message_id' => 123]
-            ], 200),
+        /** @var SendTo $sendTo */
+        $sendTo = $this->app->make(SendTo::class);
+        $result = $sendTo->telegram('Hello Telegram');
 
-            // X API mocks
-            'https://api.x.com/2/tweets' => Http::response([
-                'data' => [
-                    'id' => '1234567890',
-                    'text' => 'Test message'
-                ]
-            ], 200),
-            'https://upload.x.com/1.1/media/upload.json' => Http::response([
-                'media_id_string' => '1234567890'
-            ], 200),
-
-            // Facebook API mocks
-            'https://graph.facebook.com/*/feed' => Http::response([
-                'id' => '123456789_123456789'
-            ], 200),
-            'https://graph.facebook.com/*/photos' => Http::response([
-                'id' => '123456789_123456789'
-            ], 200),
-            'https://graph.facebook.com/*/videos' => Http::response([
-                'id' => '123456789_123456789'
-            ], 200),
-        ]);
+        $this->assertTrue($result->success);
+        $this->assertSame('telegram', $result->platformName);
+        $this->assertSame('123', $result->externalId);
     }
 
-    public function testTelegramMessageWithSignature()
+    public function testTelegramWithPhotoAttachment(): void
     {
-        $result = SendTo::telegram('Test message');
-        $this->assertIsArray($result);
-        $this->assertTrue($result['ok']);
-        $this->assertArrayHasKey('result', $result);
-        $this->assertArrayHasKey('message_id', $result['result']);
-    }
+        $this->httpClient
+            ->expects($this->once())
+            ->method('post')
+            ->with(
+                $this->stringContains('sendPhoto'),
+                $this->callback(function (array $options) {
+                    return isset($options['form_params']['photo'])
+                        && isset($options['form_params']['caption']);
+                }),
+            )
+            ->willReturn($this->telegramSuccess(['message_id' => 456]));
 
-    public function testTelegramMessageWithAttachment()
-    {
-        $attachment = [
+        /** @var SendTo $sendTo */
+        $sendTo = $this->app->make(SendTo::class);
+        $result = $sendTo->telegram('Photo caption', [
             'type' => 'photo',
-            'file' => __DIR__ . '/../fixtures/test.jpg'
-        ];
-        $result = SendTo::telegram('Test message', $attachment);
-        $this->assertIsArray($result);
-        $this->assertTrue($result['ok']);
-        $this->assertArrayHasKey('result', $result);
-        $this->assertArrayHasKey('message_id', $result['result']);
+            'file' => '/path/to/image.jpg',
+        ]);
+
+        $this->assertTrue($result->success);
+        $this->assertSame('456', $result->externalId);
     }
 
-    public function testTelegramMessageWithAudioAttachment()
+    public function testTelegramWithVideoAttachment(): void
     {
-        $attachment = [
-            'type' => 'audio',
-            'file' => __DIR__ . '/../fixtures/test.mp3',
-            'duration' => 180,
-            'performer' => 'Test Artist',
-            'title' => 'Test Song'
-        ];
-        $result = SendTo::telegram('Test message', $attachment);
-        $this->assertIsArray($result);
-        $this->assertTrue($result['ok']);
-        $this->assertArrayHasKey('result', $result);
-        $this->assertArrayHasKey('message_id', $result['result']);
-    }
+        $this->httpClient
+            ->expects($this->once())
+            ->method('post')
+            ->with(
+                $this->stringContains('sendVideo'),
+                $this->callback(function (array $options) {
+                    return isset($options['form_params']['video']);
+                }),
+            )
+            ->willReturn($this->telegramSuccess(['message_id' => 789]));
 
-    public function testTelegramMessageWithDocumentAttachment()
-    {
-        $attachment = [
-            'type' => 'document',
-            'file' => __DIR__ . '/../fixtures/test.pdf'
-        ];
-        $result = SendTo::telegram('Test message', $attachment);
-        $this->assertIsArray($result);
-        $this->assertTrue($result['ok']);
-        $this->assertArrayHasKey('result', $result);
-        $this->assertArrayHasKey('message_id', $result['result']);
-    }
-
-    public function testTelegramMessageWithVideoAttachment()
-    {
-        $attachment = [
+        /** @var SendTo $sendTo */
+        $sendTo = $this->app->make(SendTo::class);
+        $result = $sendTo->telegram('Video caption', [
             'type' => 'video',
-            'file' => __DIR__ . '/../fixtures/test.mp4',
-            'duration' => 60,
-            'width' => 1920,
-            'height' => 1080
-        ];
-        $result = SendTo::telegram('Test message', $attachment);
-        $this->assertIsArray($result);
-        $this->assertTrue($result['ok']);
-        $this->assertArrayHasKey('result', $result);
-        $this->assertArrayHasKey('message_id', $result['result']);
+            'file' => '/path/to/video.mp4',
+        ]);
+
+        $this->assertTrue($result->success);
     }
 
-    public function testTelegramMessageWithVoiceAttachment()
+    public function testTelegramWithInlineKeyboard(): void
     {
-        $attachment = [
-            'type' => 'voice',
-            'file' => __DIR__ . '/../fixtures/test.ogg',
-            'duration' => 30
-        ];
-        $result = SendTo::telegram('Test message', $attachment);
-        $this->assertIsArray($result);
-        $this->assertTrue($result['ok']);
-        $this->assertArrayHasKey('result', $result);
-        $this->assertArrayHasKey('message_id', $result['result']);
+        $keyboard = [[['text' => 'Visit', 'url' => 'https://example.com']]];
+
+        $this->httpClient
+            ->expects($this->once())
+            ->method('post')
+            ->with(
+                $this->stringContains('sendMessage'),
+                $this->callback(function (array $options) {
+                    return isset($options['form_params']['reply_markup']);
+                }),
+            )
+            ->willReturn($this->telegramSuccess());
+
+        /** @var SendTo $sendTo */
+        $sendTo = $this->app->make(SendTo::class);
+        $result = $sendTo->telegram('With keyboard', null, $keyboard);
+
+        $this->assertTrue($result->success);
     }
 
-    public function testTelegramMessageWithMediaGroup()
+    public function testTelegramWithSignature(): void
     {
-        $attachment = [
-            'type' => 'media_group',
-            'files' => [
-                ['type' => 'photo', 'media' => __DIR__ . '/../fixtures/test.jpg'],
-                ['type' => 'photo', 'media' => __DIR__ . '/../fixtures/test2.jpg']
-            ]
-        ];
-        $result = SendTo::telegram('Test message', $attachment);
-        $this->assertIsArray($result);
-        $this->assertTrue($result['ok']);
-        $this->assertArrayHasKey('result', $result);
+        // Enable signature in config
+        $this->app['config']->set('synglify.platforms.telegram.channel_signature', '— Test Bot');
+
+        // Re-register to pick up new config
+        $this->app->forgetInstance(\Synglify\Core\Config\SynglifyConfig::class);
+        $this->app->forgetInstance(\Synglify\Core\Platforms\PlatformRegistry::class);
+        $this->app->forgetInstance(\Synglify\Core\Platforms\Telegram\TelegramPlatform::class);
+        $this->app->forgetInstance(\Synglify\Core\Publishing\Publisher::class);
+        $this->app->forgetInstance(SendTo::class);
+        $this->app->forgetInstance('synglify');
+        (new \Synglify\Laravel\SynglifyServiceProvider($this->app))->register();
+
+        // Re-bind the mock HTTP client after re-registration
+        $this->app->instance(\Synglify\Core\Http\Contracts\HttpClientInterface::class, $this->httpClient);
+
+        $this->httpClient
+            ->expects($this->once())
+            ->method('post')
+            ->with(
+                $this->anything(),
+                $this->callback(function (array $options) {
+                    $text = $options['form_params']['text'] ?? '';
+                    return str_contains($text, '— Test Bot');
+                }),
+            )
+            ->willReturn($this->telegramSuccess());
+
+        /** @var SendTo $sendTo */
+        $sendTo = $this->app->make(SendTo::class);
+        $result = $sendTo->telegram('Hello with signature');
+
+        $this->assertTrue($result->success);
     }
 
-    public function testTelegramMessageWithLocation()
+    public function testTelegramLocation(): void
     {
-        $attachment = [
+        $this->httpClient
+            ->expects($this->once())
+            ->method('post')
+            ->with(
+                $this->stringContains('sendLocation'),
+                $this->callback(function (array $options) {
+                    $p = $options['form_params'];
+                    return $p['latitude'] === 51.5074
+                        && $p['longitude'] === -0.1278;
+                }),
+            )
+            ->willReturn($this->telegramSuccess(['message_id' => 300]));
+
+        /** @var SendTo $sendTo */
+        $sendTo = $this->app->make(SendTo::class);
+        $result = $sendTo->telegram('', [
             'type' => 'location',
-            'latitude' => 40.7128,
-            'longitude' => -74.0060,
-            'live_period' => 3600
-        ];
-        $result = SendTo::telegram('Test message', $attachment);
-        $this->assertIsArray($result);
-        $this->assertTrue($result['ok']);
-        $this->assertArrayHasKey('result', $result);
-        $this->assertArrayHasKey('message_id', $result['result']);
+            'latitude' => 51.5074,
+            'longitude' => -0.1278,
+        ]);
+
+        $this->assertTrue($result->success);
+        $this->assertSame('300', $result->externalId);
     }
 
-    public function testTelegramMessageWithVenue()
+    public function testTelegramVenue(): void
     {
-        $attachment = [
+        $this->httpClient
+            ->expects($this->once())
+            ->method('post')
+            ->with(
+                $this->stringContains('sendVenue'),
+                $this->callback(function (array $options) {
+                    $p = $options['form_params'];
+                    return $p['title'] === 'Coffee Shop'
+                        && $p['address'] === '123 Main St';
+                }),
+            )
+            ->willReturn($this->telegramSuccess(['message_id' => 301]));
+
+        /** @var SendTo $sendTo */
+        $sendTo = $this->app->make(SendTo::class);
+        $result = $sendTo->telegram('', [
             'type' => 'venue',
-            'latitude' => 40.7128,
-            'longitude' => -74.0060,
-            'title' => 'Test Venue',
-            'address' => '123 Test St',
-            'foursquare_id' => 'test123'
-        ];
-        $result = SendTo::telegram('Test message', $attachment);
-        $this->assertIsArray($result);
-        $this->assertTrue($result['ok']);
-        $this->assertArrayHasKey('result', $result);
-        $this->assertArrayHasKey('message_id', $result['result']);
+            'latitude' => 51.5074,
+            'longitude' => -0.1278,
+            'title' => 'Coffee Shop',
+            'address' => '123 Main St',
+        ]);
+
+        $this->assertTrue($result->success);
     }
 
-    public function testTelegramMessageWithContact()
+    public function testTelegramContact(): void
     {
-        $attachment = [
+        $this->httpClient
+            ->expects($this->once())
+            ->method('post')
+            ->with(
+                $this->stringContains('sendContact'),
+                $this->callback(function (array $options) {
+                    $p = $options['form_params'];
+                    return $p['phone_number'] === '+1234567890'
+                        && $p['first_name'] === 'John';
+                }),
+            )
+            ->willReturn($this->telegramSuccess(['message_id' => 302]));
+
+        /** @var SendTo $sendTo */
+        $sendTo = $this->app->make(SendTo::class);
+        $result = $sendTo->telegram('', [
             'type' => 'contact',
             'phone_number' => '+1234567890',
             'first_name' => 'John',
-            'last_name' => 'Doe'
-        ];
-        $result = SendTo::telegram('Test message', $attachment);
-        $this->assertIsArray($result);
-        $this->assertTrue($result['ok']);
-        $this->assertArrayHasKey('result', $result);
-        $this->assertArrayHasKey('message_id', $result['result']);
+            'last_name' => 'Doe',
+        ]);
+
+        $this->assertTrue($result->success);
     }
 
-    public function testTelegramMessageWithInlineKeyboard()
+    // ── Twitter / X ──────────────────────────────────────────────────────
+
+    public function testTwitterTextMessage(): void
     {
-        $inline_keyboard = [
-            [
-                ['text' => 'Button 1', 'callback_data' => 'button1'],
-                ['text' => 'Button 2', 'callback_data' => 'button2']
-            ]
-        ];
-        $result = SendTo::telegram('Test message', '', $inline_keyboard);
-        $this->assertIsArray($result);
-        $this->assertTrue($result['ok']);
-        $this->assertArrayHasKey('result', $result);
-        $this->assertArrayHasKey('message_id', $result['result']);
+        $this->httpClient
+            ->expects($this->once())
+            ->method('post')
+            ->with(
+                $this->stringContains('api.x.com/2/tweets'),
+                $this->callback(function (array $options) {
+                    $body = $options['json'] ?? [];
+                    return str_contains($body['text'] ?? '', 'Hello Twitter');
+                }),
+            )
+            ->willReturn($this->twitterSuccess());
+
+        /** @var SendTo $sendTo */
+        $sendTo = $this->app->make(SendTo::class);
+        $result = $sendTo->twitter('Hello Twitter');
+
+        $this->assertTrue($result->success);
+        $this->assertSame('twitter', $result->platformName);
+        $this->assertSame('1234567890', $result->externalId);
     }
 
-    public function testXMessageWithText()
+    public function testXIsAliasForTwitter(): void
     {
-        $result = SendTo::x('Test message');
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('data', $result);
-        $this->assertArrayHasKey('id', $result['data']);
-        $this->assertEquals('1234567890', $result['data']['id']);
+        $this->httpClient
+            ->expects($this->once())
+            ->method('post')
+            ->with(
+                $this->stringContains('api.x.com'),
+                $this->anything(),
+            )
+            ->willReturn($this->twitterSuccess());
+
+        /** @var SendTo $sendTo */
+        $sendTo = $this->app->make(SendTo::class);
+        $result = $sendTo->x('Hello X');
+
+        $this->assertTrue($result->success);
+        $this->assertSame('twitter', $result->platformName);
     }
 
-    public function testXMessageWithMedia()
+    // ── Facebook ─────────────────────────────────────────────────────────
+
+    public function testFacebookLinkPost(): void
     {
-        $attachment = [
-            'type' => 'photo',
-            'file' => __DIR__ . '/../fixtures/test.jpg'
-        ];
-        $result = SendTo::x('Test message with media', $attachment);
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('data', $result);
-        $this->assertArrayHasKey('id', $result['data']);
-        $this->assertEquals('1234567890', $result['data']['id']);
+        $this->httpClient
+            ->expects($this->once())
+            ->method('post')
+            ->with(
+                $this->stringContains('graph.facebook.com'),
+                $this->callback(function (array $options) {
+                    $p = $options['form_params'] ?? [];
+                    return isset($p['message']) && isset($p['link']);
+                }),
+            )
+            ->willReturn($this->facebookSuccess());
+
+        /** @var SendTo $sendTo */
+        $sendTo = $this->app->make(SendTo::class);
+        $result = $sendTo->facebook('Check this out!', 'link', [
+            'link' => 'https://example.com/article',
+        ]);
+
+        $this->assertTrue($result->success);
+        $this->assertSame('facebook', $result->platformName);
     }
 
-    public function testXMessageWithOptions()
+    // ── Generic ──────────────────────────────────────────────────────────
+
+    public function testPublishDirectly(): void
     {
-        $options = [
-            'reply_to' => '123456789',
-            'quote_tweet_id' => '987654321'
-        ];
-        $result = SendTo::x('Test message', '', $options);
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('data', $result);
-        $this->assertArrayHasKey('id', $result['data']);
-        $this->assertEquals('1234567890', $result['data']['id']);
+        $this->httpClient
+            ->expects($this->once())
+            ->method('post')
+            ->willReturn($this->telegramSuccess());
+
+        $post = new \Synglify\Core\Content\Post(
+            title: 'Direct Post',
+            body: 'Published via Post object',
+        );
+
+        /** @var SendTo $sendTo */
+        $sendTo = $this->app->make(SendTo::class);
+        $result = $sendTo->publish($post, 'telegram');
+
+        $this->assertTrue($result->success);
     }
 
-    public function testFacebookLink()
+    public function testToAllPublishesToAllPlatforms(): void
     {
-        $data = [
-            'link' => 'https://example.com',
-            'message' => 'Test message'
-        ];
-        $result = SendTo::facebook('link', $data);
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('id', $result);
-        $this->assertEquals('123456789', $result['id']);
+        // Expect 3 calls — one per platform
+        $this->httpClient
+            ->expects($this->exactly(3))
+            ->method('post')
+            ->willReturnOnConsecutiveCalls(
+                $this->telegramSuccess(),
+                $this->twitterSuccess(),
+                $this->facebookSuccess(),
+            );
+
+        $post = new \Synglify\Core\Content\Post(
+            title: 'Cross-platform',
+            body: 'Post to all platforms',
+        );
+
+        /** @var SendTo $sendTo */
+        $sendTo = $this->app->make(SendTo::class);
+        $results = $sendTo->toAll($post);
+
+        $this->assertCount(3, $results);
+        $this->assertArrayHasKey('telegram', $results);
+        $this->assertArrayHasKey('twitter', $results);
+        $this->assertArrayHasKey('facebook', $results);
     }
 
-    public function testFacebookPhoto()
+    public function testTelegramFailureReturnsFailedResult(): void
     {
-        $data = [
-            'photo' => __DIR__ . '/test.jpg',
-            'message' => 'Test message'
-        ];
-        $result = SendTo::facebook('photo', $data);
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('id', $result);
-        $this->assertEquals('123456789', $result['id']);
-    }
+        $this->httpClient
+            ->expects($this->once())
+            ->method('post')
+            ->willReturn([
+                'status' => 400,
+                'headers' => [],
+                'body' => json_encode([
+                    'ok' => false,
+                    'description' => 'Bad Request: chat not found',
+                    'error_code' => 400,
+                ]),
+            ]);
 
-    public function testFacebookVideo()
-    {
-        $data = [
-            'video' => __DIR__ . '/test.mp4',
-            'title' => 'Test Video',
-            'description' => 'Test Description'
-        ];
-        $result = SendTo::facebook('video', $data);
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('id', $result);
-        $this->assertEquals('123456789', $result['id']);
-    }
+        /** @var SendTo $sendTo */
+        $sendTo = $this->app->make(SendTo::class);
+        $result = $sendTo->telegram('This will fail');
 
-    public function testFacebookInvalidType()
-    {
-        $data = [
-            'message' => 'Test message'
-        ];
-        $result = SendTo::facebook('invalid_type', $data);
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('id', $result);
-        $this->assertNull($result['id']);
+        $this->assertFalse($result->success);
+        $this->assertTrue($result->failed());
+        $this->assertNotNull($result->error);
     }
-
-    public function testSignatureAppending()
-    {
-        Config::set('larasap.telegram.channel_signature', '- Test Signature');
-        $text = 'Test message';
-        $result = SendTo::assignSignature($text, 'text');
-        $this->assertEquals($text . "\n- Test Signature", $result);
-    }
-
-    public function testSignatureAppendingWithLongText()
-    {
-        Config::set('larasap.telegram.channel_signature', '- Test Signature');
-        $text = str_repeat('a', 4096); // Maximum Telegram message length
-        $result = SendTo::assignSignature($text, 'text');
-        $this->assertLessThanOrEqual(4096, strlen($result));
-        $this->assertStringEndsWith('- Test Signature', $result);
-    }
-} 
+}
