@@ -1,749 +1,344 @@
-![](https://i.imgur.com/j6bzKQc.jpg)
+# Synglify for Laravel
 
-# 👋 Introduction Laravel Social Auto Posting (Larasap)
+Laravel integration for [Synglify Core](https://github.com/alihesari/synglify-core) — publish content to Telegram, X (Twitter), and Facebook from your Laravel application.
 
-> **Important Notice**: This package has been moved from `toolkito/larasap` to `alihesari/larasap`. The old package is no longer maintained. Please use the new namespace for all future installations.
+> **Note:** This package was previously `alihesari/larasap`. It has been rewritten from scratch to use `synglify/synglify-core` as its engine.
 
-A powerful Laravel package that enables automated posting to multiple social media platforms including Telegram, X (Twitter), and Facebook. This package provides a simple and elegant way to manage your social media presence.
+## Requirements
 
-## 🔐 Authentication Methods
+- PHP 8.1+
+- Laravel 10, 11, or 12
 
-### X (Twitter) API Authentication
-This package uses OAuth 1.0a for X API authentication because:
-- It's better suited for server-side automated posting
-- Provides simpler implementation for Laravel applications
-- No need to handle token refresh flows
-- Works well with Laravel's configuration system
-
-While X also supports OAuth 2.0, OAuth 1.0a is the recommended choice for this package's use case of automated server-side posting.
-
-### Facebook API Authentication
-The package uses Facebook Graph API with Page Access Token for authentication. This provides:
-- Secure access to Facebook Pages
-- Long-lived tokens
-- Granular permissions control
-- Easy integration with Laravel's configuration system
-
-### Telegram Bot API Authentication
-Uses Telegram Bot API token for authentication, providing:
-- Simple token-based authentication
-- Secure communication
-- Easy setup process
-
-## 🚀 Features
-
-### Telegram Features
-- 📝 Send text messages
-- 📷 Send photos with captions
-- 🎵 Send audio files with metadata
-- 📖 Send documents
-- 📺 Send videos with metadata
-- 🔊 Send voice messages
-- 🎴 Send media groups (2-10 items)
-- 📍 Send locations
-- 📌 Send venues
-- 📞 Send contacts
-- 🌐 Send messages with inline keyboards
-- ✏️ Edit messages and captions
-- 📌 Pin/unpin messages
-- 🔄 Message retry with backoff
-
-### X (Twitter) Features
-- ✨ Send text tweets
-- 🖼️ Send tweets with media (up to 4 items)
-- 🗣️ Reply to tweets
-- 💬 Quote tweets
-- 📊 Create polls
-- 📍 Add location to tweets
-- ⏰ Schedule tweets
-- 🔄 Rate limit handling
-- 🔄 Automatic retry with backoff
-
-### Facebook Features
-- 🔗 Share links with descriptions
-- 📸 Post photos with captions
-- 🎥 Share videos with titles and descriptions
-- ⏰ Schedule posts
-- 🔒 Privacy controls
-- 🎯 Post targeting
-- 📊 Debug mode
-- 🔄 Error handling and logging
-
-## 🔨 Installation
-
-1. Install the package via Composer:
-```sh
-composer require alihesari/larasap
-```
-
-2. Publish the configuration file:
-```sh
-php artisan vendor:publish --tag=larasap
-```
-
-## 🔌 Configuration
-
-Configure your social media credentials in `config/larasap.php`:
-
-```php
-'telegram' => [
-    'api_token' => 'your_telegram_bot_token',
-    'bot_username' => 'your_bot_username',
-    'channel_username' => 'your_channel_username',
-    'channel_signature' => 'your_channel_signature',
-    'proxy' => false,
-],
-
-'x' => [
-    'consumer_key' => 'your_consumer_key',
-    'consumer_secret' => 'your_consumer_secret',
-    'access_token' => 'your_access_token',
-    'access_token_secret' => 'your_access_token_secret'
-],
-
-'facebook' => [
-    'app_id' => 'your_app_id',
-    'app_secret' => 'your_app_secret',
-    'default_graph_version' => 'v19.0',
-    'page_access_token' => 'your_page_access_token',
-    'page_id' => 'your_page_id',
-    'enable_beta_mode' => false,
-    'debug_mode' => false,
-]
-```
-
-### Detailed Configuration Guide
-
-#### Telegram Configuration
-- `api_token`: Your Telegram Bot API token from [@BotFather](https://t.me/botfather)
-- `bot_username`: Your bot's username (without @)
-- `channel_username`: Target channel username (without @)
-- `channel_signature`: Text to be added at the end of each message
-- `proxy`: Enable/disable proxy support (boolean)
-
-#### X (Twitter) Configuration
-- `consumer_key`: Your X API consumer key
-- `consumer_secret`: Your X API consumer secret
-- `access_token`: Your X API access token
-- `access_token_secret`: Your X API access token secret
-
-#### Facebook Configuration
-- `app_id`: Your Meta App ID
-- `app_secret`: Your Meta App Secret
-- `default_graph_version`: Facebook Graph API version (default: v19.0)
-- `page_access_token`: Your Facebook Page Access Token
-- `page_id`: Your Facebook Page ID
-- `enable_beta_mode`: Enable beta features (default: false)
-- `debug_mode`: Enable detailed logging (default: false)
-
-### Environment Variables
-You can also set these values in your `.env` file:
-
-```env
-TELEGRAM_BOT_TOKEN=your_telegram_bot_token
-TELEGRAM_BOT_USERNAME=your_bot_username
-TELEGRAM_CHANNEL_USERNAME=your_channel_username
-TELEGRAM_CHANNEL_SIGNATURE=your_channel_signature
-TELEGRAM_PROXY=false
-
-X_CONSUMER_KEY=your_consumer_key
-X_CONSUMER_SECRET=your_consumer_secret
-X_ACCESS_TOKEN=your_access_token
-X_ACCESS_TOKEN_SECRET=your_access_token_secret
-
-FACEBOOK_APP_ID=your_app_id
-FACEBOOK_APP_SECRET=your_app_secret
-FACEBOOK_PAGE_ACCESS_TOKEN=your_page_access_token
-FACEBOOK_PAGE_ID=your_page_id
-FACEBOOK_ENABLE_BETA_MODE=false
-FACEBOOK_DEBUG_MODE=false
-```
-
-### Configuration Validation
-The package validates all configuration values on initialization. If any required values are missing or invalid, it will throw an exception with a descriptive message.
-
-### Configuration Caching
-For better performance, the package caches the configuration values. If you need to refresh the configuration, you can clear the Laravel configuration cache:
+## Installation
 
 ```bash
-php artisan config:clear
+composer require synglify/synglify-laravel
 ```
 
-## 🕹 Usage
+Publish the config file:
 
-First, add the following to your controller:
-```php
-use Alihesari\Larasap\SendTo;
-use Alihesari\Larasap\Facades\X;
-use Alihesari\Larasap\Facades\Telegram;
-use Alihesari\Larasap\Facades\Facebook;
-```
-
-### Telegram Examples
-
-#### Basic Text Message
-```php
-SendTo::telegram('Hello, I\'m testing Laravel social auto posting');
-```
-
-#### Text Message with Inline Keyboard
-```php
-SendTo::telegram(
-    'Check out our website!',
-    '',
-    [
-        [
-            [
-                'text' => 'Visit Website',
-                'url' => 'https://example.com'
-            ],
-            [
-                'text' => 'Follow Us',
-                'url' => 'https://t.me/yourchannel'
-            ]
-        ]
-    ]
-);
-```
-
-#### Send Photo with Caption
-```php
-SendTo::telegram(
-    'Beautiful sunset! 🌅',
-    [
-        'type' => 'photo',
-        'file' => 'https://example.com/sunset.jpg',
-        'width' => 1920,
-        'height' => 1080
-    ]
-);
-```
-
-#### Send Audio File
-```php
-SendTo::telegram(
-    'Listen to our podcast! 🎧',
-    [
-        'type' => 'audio',
-        'file' => 'https://example.com/podcast.mp3',
-        'duration' => 1800,
-        'performer' => 'Your Podcast Name',
-        'title' => 'Episode 1'
-    ]
-);
-```
-
-#### Send Video with Thumbnail
-```php
-SendTo::telegram(
-    'Watch our latest video! 🎥',
-    [
-        'type' => 'video',
-        'file' => 'https://example.com/video.mp4',
-        'thumb' => 'https://example.com/thumbnail.jpg',
-        'duration' => 300,
-        'width' => 1920,
-        'height' => 1080
-    ]
-);
-```
-
-#### Send Document
-```php
-SendTo::telegram(
-    'Download our whitepaper! 📄',
-    [
-        'type' => 'document',
-        'file' => 'https://example.com/whitepaper.pdf',
-        'thumb' => 'https://example.com/thumb.jpg'
-    ]
-);
-```
-
-#### Send Location
-```php
-SendTo::telegram(
-    null,
-    [
-        'type' => 'location',
-        'latitude' => 40.7128,
-        'longitude' => -74.0060,
-        'live_period' => 3600
-    ]
-);
-```
-
-### X (Twitter) Examples
-
-#### Basic Tweet
-```php
-SendTo::x('Hello, I\'m testing Laravel social auto posting!');
-```
-
-#### Tweet with Media
-```php
-SendTo::x(
-    'Check out these amazing photos! 📸',
-    [
-        'media' => [
-            'path/to/photo1.jpg',
-            'path/to/photo2.jpg',
-            'path/to/photo3.jpg'
-        ]
-    ]
-);
-```
-
-#### Reply to Tweet
-```php
-SendTo::x(
-    'Thanks for your feedback!',
-    [
-        'reply_to' => '1234567890'
-    ]
-);
-```
-
-#### Quote Tweet
-```php
-SendTo::x(
-    'This is a great point!',
-    [
-        'quote_tweet_id' => '1234567890'
-    ]
-);
-```
-
-#### Create Poll
-```php
-SendTo::x(
-    'What\'s your favorite programming language?',
-    [
-        'poll' => [
-            'options' => ['PHP', 'Python', 'JavaScript', 'Java'],
-            'duration_minutes' => 1440
-        ]
-    ]
-);
-```
-
-#### Tweet with Location
-```php
-SendTo::x(
-    'Check out this amazing place!',
-    [
-        'location' => [
-            'place_id' => 'abc123xyz'
-        ]
-    ]
-);
-```
-
-### Facebook Examples
-
-#### Share Link with Custom Message
-```php
-SendTo::facebook(
-    'link',
-    [
-        'link' => 'https://github.com/alihesari/laravel-social-auto-posting',
-        'message' => 'Check out this awesome package!',
-        'privacy' => [
-            'value' => 'EVERYONE'
-        ]
-    ]
-);
-```
-
-#### Share Photo with Caption
-```php
-SendTo::facebook(
-    'photo',
-    [
-        'photo' => 'path/to/photo.jpg',
-        'message' => 'Beautiful sunset! 🌅',
-        'targeting' => [
-            'countries' => ['US', 'CA'],
-            'age_min' => 18,
-            'age_max' => 65
-        ]
-    ]
-);
-```
-
-#### Share Video with Metadata
-```php
-SendTo::facebook(
-    'video',
-    [
-        'video' => 'path/to/video.mp4',
-        'title' => 'My Amazing Video',
-        'description' => 'Check out this amazing video!',
-        'privacy' => [
-            'value' => 'FRIENDS'
-        ],
-        'scheduled_publish_time' => strtotime('+1 day')
-    ]
-);
-```
-
-#### Share with Custom Privacy Settings
-```php
-SendTo::facebook(
-    'link',
-    [
-        'link' => 'https://example.com',
-        'message' => 'Private post',
-        'privacy' => [
-            'value' => 'CUSTOM',
-            'friends' => 'ALL_FRIENDS',
-            'allow' => '123456789',
-            'deny' => '987654321'
-        ]
-    ]
-);
-```
-
-#### Share with Targeting
-```php
-SendTo::facebook(
-    'photo',
-    [
-        'photo' => 'path/to/photo.jpg',
-        'message' => 'Targeted post',
-        'targeting' => [
-            'countries' => ['US'],
-            'regions' => ['CA'],
-            'cities' => ['San Francisco'],
-            'age_min' => 21,
-            'age_max' => 35,
-            'genders' => ['male', 'female'],
-            'interests' => ['Technology', 'Programming']
-        ]
-    ]
-);
-```
-
-## 🔒 Security Features
-
-- SSL verification enabled by default
-- Proxy support with authentication
-- Secure API token handling
-- Rate limiting protection
-- Input validation and sanitization
-- Error handling with custom exceptions
-
-## ⚡ Performance Features
-
-- Connection timeout: 10 seconds
-- Request timeout: 30 seconds
-- Automatic JSON encoding/decoding
-- Efficient cURL usage
-- Retry mechanism with exponential backoff
-- Rate limit handling
-
-## 🧪 Testing
-
-The package includes comprehensive test coverage:
-- Unit tests for all components
-- Feature tests for integration
-- Mock responses for API calls
-- Test mode for development
-
-## 🧪 Testing Routes
-
-To test the social media posting functionality, you can create your own routes in your Laravel application. Here's an example:
-
-1. Create a controller:
 ```bash
-php artisan make:controller SocialMediaController
+php artisan vendor:publish --tag=synglify-config
 ```
 
-2. Add the following code to your controller:
+## Configuration
+
+Add your credentials to `.env`:
+
+```dotenv
+# Telegram
+TELEGRAM_BOT_TOKEN=your-bot-token
+TELEGRAM_BOT_USERNAME=your_bot
+TELEGRAM_CHANNEL_USERNAME=@your_channel
+TELEGRAM_CHANNEL_SIGNATURE=              # Optional footer signature
+TELEGRAM_PARSE_MODE=HTML                  # HTML or Markdown
+
+# X (Twitter)
+TWITTER_CONSUMER_KEY=your-key
+TWITTER_CONSUMER_SECRET=your-secret
+TWITTER_ACCESS_TOKEN=your-token
+TWITTER_ACCESS_TOKEN_SECRET=your-token-secret
+
+# Facebook
+FACEBOOK_APP_ID=your-app-id
+FACEBOOK_APP_SECRET=your-app-secret
+FACEBOOK_PAGE_ACCESS_TOKEN=your-page-token
+FACEBOOK_PAGE_ID=your-page-id
+FACEBOOK_GRAPH_VERSION=v21.0
+
+# Proxy (optional — for restricted networks)
+SYNGLIFY_PROXY_HOST=localhost
+SYNGLIFY_PROXY_PORT=9050
+SYNGLIFY_PROXY_TYPE=7
+```
+
+Only platforms with valid credentials are registered. If you leave Twitter credentials empty, only Telegram and Facebook will be available.
+
+## Usage
+
+### Via Dependency Injection (recommended)
+
 ```php
-<?php
+use Synglify\Laravel\SendTo;
 
-namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
-use Alihesari\Larasap\Facades\X;
-use Alihesari\Larasap\Facades\Telegram;
-use Alihesari\Larasap\Facades\Facebook;
-
-class SocialMediaController extends Controller
+class PostController extends Controller
 {
-    public function test()
+    public function publish(SendTo $sendTo)
     {
-        try {
-            // Test Telegram posting
-            $telegramResult = Telegram::sendMessage('Test message from Laravel 12');
-            
-            // Test X (Twitter) posting
-            $xResult = X::post('Test tweet from Laravel 12');
-            
-            // Test Facebook posting
-            $facebookResult = Facebook::post([
-                'message' => 'Test post from Laravel 12'
-            ]);
-            
-            return response()->json([
-                'telegram' => $telegramResult,
-                'x' => $xResult,
-                'facebook' => $facebookResult
-            ]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        // Telegram
+        $result = $sendTo->telegram('Hello from Laravel!');
+
+        // X (Twitter)
+        $result = $sendTo->twitter('Hello from Laravel!');
+        $result = $sendTo->x('Hello from Laravel!'); // alias
+
+        // Facebook
+        $result = $sendTo->facebook('Check this out!', 'link', [
+            'link' => 'https://example.com',
+        ]);
     }
 }
 ```
 
-3. Add the route in your `routes/web.php`:
+### Via Facade
+
 ```php
-use App\Http\Controllers\SocialMediaController;
+use Synglify\Laravel\Facades\Synglify;
 
-Route::get('/test-social-posting', [SocialMediaController::class, 'test'])
-    ->name('social.test');
+Synglify::telegram('Hello from the facade!');
+Synglify::twitter('Tweet from the facade!');
 ```
 
-Now you can test the social media posting by visiting `/test-social-posting` in your browser.
+### Return Value
 
-Note: Make sure you have configured your social media credentials in `config/larasap.php` or your `.env` file before testing.
+All methods return a `Synglify\Core\Publishing\PublishResult`:
 
-## 📝 Notes
+```php
+$result = $sendTo->telegram('Hello!');
 
-- All methods support test mode for development
-- Message length limits are enforced (4096 chars for text, 1024 for captions)
-- Proxy configuration is optional but validated when provided
-- Debug mode available for Facebook API
-- Beta mode support for testing new features
-
-## 🚩 Roadmap
-
-- [ ] Improve test coverage
-- [ ] Add support for more social media platforms
-- [ ] Implement queue system for better performance
-- [ ] Add support for story posting
-- [ ] Implement analytics tracking
-- [ ] Add support for carousel posts
-- [ ] Implement bulk posting features
-
-## 📄 License
-
-This package is open-sourced software licensed under the MIT license.
-
-### License Terms
-
-The MIT License is a permissive license that is short and to the point. It lets people do anything they want with your code as long as they provide attribution back to you and don't hold you liable.
-
-#### What you can do with this package:
-
-- ✅ Use it commercially
-- ✅ Modify it
-- ✅ Distribute it
-- ✅ Use it privately
-- ✅ Sublicense it
-
-#### What you must do:
-
-- ✅ Include the original copyright notice
-- ✅ Include the license text
-
-#### What you cannot do:
-
-- ❌ Hold the author liable
-- ❌ Use the author's name/trademarks without permission
-
-### Copyright Notice
-
-```
-Copyright (c) 2016-2024 Ali Hesari <alihesari.com@gmail.com>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+$result->success;      // bool
+$result->platformName; // 'telegram'
+$result->externalId;   // '12345' (message ID)
+$result->externalUrl;  // URL if available
+$result->error;        // error message if failed
+$result->failed();     // bool
 ```
 
-### Third-Party Licenses
+### Telegram Features
 
-This package uses several third-party libraries:
+```php
+// Text message
+$sendTo->telegram('Simple text message');
 
-- [dg/twitter-php](https://github.com/dg/twitter-php) - MIT License
-- [facebook/graph-sdk](https://github.com/facebook/php-graph-sdk) - MIT License
-- [illuminate/support](https://github.com/illuminate/support) - MIT License
+// Photo with caption
+$sendTo->telegram('Photo caption', [
+    'type' => 'photo',
+    'file' => '/path/to/image.jpg',
+]);
 
-For more information about third-party licenses, please see the [composer.json](composer.json) file.
+// Video
+$sendTo->telegram('Video caption', [
+    'type' => 'video',
+    'file' => '/path/to/video.mp4',
+    'duration' => 120,
+    'width' => 1920,
+    'height' => 1080,
+]);
 
-## 👥 Contributing
+// Audio
+$sendTo->telegram('Audio caption', [
+    'type' => 'audio',
+    'file' => '/path/to/audio.mp3',
+    'duration' => 200,
+]);
 
-We welcome contributions to Laravel Social Auto Posting! Here's how you can help:
+// Document
+$sendTo->telegram('Document caption', [
+    'type' => 'document',
+    'file' => '/path/to/file.pdf',
+]);
 
-### Development Setup
+// Voice message
+$sendTo->telegram('', [
+    'type' => 'voice',
+    'file' => '/path/to/voice.ogg',
+    'duration' => 15,
+]);
 
-1. Fork the repository
-2. Clone your fork:
-```bash
-git clone https://github.com/alihesari/laravel-social-auto-posting.git
+// Location
+$sendTo->telegram('', [
+    'type' => 'location',
+    'latitude' => 51.5074,
+    'longitude' => -0.1278,
+    'live_period' => 600, // optional
+]);
+
+// Venue
+$sendTo->telegram('', [
+    'type' => 'venue',
+    'latitude' => 51.5074,
+    'longitude' => -0.1278,
+    'title' => 'Coffee Shop',
+    'address' => '123 Main St',
+]);
+
+// Contact
+$sendTo->telegram('', [
+    'type' => 'contact',
+    'phone_number' => '+1234567890',
+    'first_name' => 'John',
+    'last_name' => 'Doe',
+]);
+
+// Media group
+$sendTo->telegram('Album caption', [
+    'type' => 'media_group',
+    'files' => [
+        ['type' => 'photo', 'media' => '/path/to/img1.jpg'],
+        ['type' => 'photo', 'media' => '/path/to/img2.jpg'],
+    ],
+]);
+
+// Inline keyboard
+$sendTo->telegram('Click below!', null, [
+    [['text' => 'Visit', 'url' => 'https://example.com']],
+]);
 ```
-3. Install dependencies:
-```bash
-composer install
+
+### Twitter / X Features
+
+```php
+// Text tweet
+$sendTo->twitter('Hello Twitter!');
+
+// Tweet with media
+$sendTo->twitter('Check this photo!', [
+    'path' => '/path/to/image.jpg',
+    'mime_type' => 'image/jpeg',
+]);
+
+// Multiple media
+$sendTo->twitter('Multiple images!', [
+    ['path' => '/path/to/img1.jpg', 'mime_type' => 'image/jpeg'],
+    ['path' => '/path/to/img2.jpg', 'mime_type' => 'image/jpeg'],
+]);
 ```
-4. Create a new branch for your feature:
-```bash
-git checkout -b feature/your-feature-name
+
+### Facebook Features
+
+```php
+// Link post
+$sendTo->facebook('Check this article!', 'link', [
+    'link' => 'https://example.com/article',
+]);
+
+// Photo post
+$sendTo->facebook('Beautiful photo!', 'photo', [
+    'photo' => '/path/to/image.jpg',
+]);
+
+// Video post
+$sendTo->facebook('Watch this!', 'video', [
+    'video' => '/path/to/video.mp4',
+    'title' => 'My Video',
+    'description' => 'A great video.',
+]);
 ```
 
-### Coding Standards
+### Using Post Objects Directly
 
-- Follow PSR-12 coding standards
-- Add type hints and return types where possible
-- Write meaningful commit messages following conventional commits
-- Add tests for new features
-- Update documentation for any changes
+For full control, create `Synglify\Core\Content\Post` objects:
 
-### Testing
+```php
+use Synglify\Core\Content\Post;
+use Synglify\Core\Content\Media;
+use Synglify\Core\Content\MediaCollection;
 
-1. Run the test suite:
+$post = new Post(
+    title: 'My Article',
+    body: 'Full article body text...',
+    url: 'https://example.com/article',
+    tags: ['laravel', 'php'],
+    media: new MediaCollection([
+        new Media('/path/to/image.jpg', 'image/jpeg', altText: 'Article image'),
+    ]),
+);
+
+// Publish to a specific platform
+$result = $sendTo->publish($post, 'telegram');
+
+// Publish to all configured platforms
+$results = $sendTo->toAll($post);
+// Returns: ['telegram' => PublishResult, 'twitter' => PublishResult, ...]
+```
+
+### Events
+
+The package dispatches events through Laravel's event system:
+
+- `Synglify\Core\Events\PostPublished` — fired on successful publish
+- `Synglify\Core\Events\PostFailed` — fired on publish failure
+
+```php
+// In EventServiceProvider or via Event::listen()
+use Synglify\Core\Events\PostPublished;
+use Synglify\Core\Events\PostFailed;
+
+Event::listen(PostPublished::class, function (PostPublished $event) {
+    Log::info("Published to {$event->result->platformName}", [
+        'external_id' => $event->result->externalId,
+    ]);
+});
+
+Event::listen(PostFailed::class, function (PostFailed $event) {
+    Log::error("Failed to publish to {$event->result->platformName}", [
+        'error' => $event->result->error,
+    ]);
+});
+```
+
+## Architecture
+
+This package is a thin wrapper around `synglify/synglify-core`. The architecture:
+
+```
+Your Laravel App
+    └── Synglify\Laravel\SendTo (or Facade)
+        └── Synglify\Core\Publishing\Publisher
+            └── Synglify\Core\Platforms\{Telegram,Twitter,Facebook}Platform
+                └── Synglify\Core\Http\HttpClient (cURL)
+```
+
+The service provider wires everything together:
+- `SynglifyConfig` — built from `config/synglify.php`
+- `HttpClient` — core's cURL client (with optional proxy)
+- Platform instances — only registered if credentials are configured
+- `PlatformRegistry` — holds all active platforms
+- `Publisher` — orchestrates publishing with event dispatch
+- `SendTo` — high-level API bound as `'synglify'` singleton
+
+## Testing
+
 ```bash
 composer test
+# or
+./vendor/bin/phpunit
 ```
 
-2. Run with coverage report:
-```bash
-composer test -- --coverage-html coverage
+In your own tests, mock `HttpClientInterface` on the container:
+
+```php
+use Synglify\Core\Http\Contracts\HttpClientInterface;
+
+$mock = $this->createMock(HttpClientInterface::class);
+$mock->method('post')->willReturn([
+    'status' => 200,
+    'headers' => [],
+    'body' => json_encode(['ok' => true, 'result' => ['message_id' => 1]]),
+]);
+
+$this->app->instance(HttpClientInterface::class, $mock);
 ```
 
-### Pull Request Process
+## Migration from alihesari/larasap
 
-1. Update the README.md with details of changes if needed
-2. Update the CHANGELOG.md with your changes
-3. The PR will be merged once you have the sign-off of at least one other developer
+If upgrading from the old package:
 
-### Commit Messages
+1. Replace `alihesari/larasap` with `synglify/synglify-laravel` in `composer.json`
+2. Rename `config/larasap.php` → `config/synglify.php` (see new format above)
+3. Replace `Alihesari\Larasap\SendTo` with `Synglify\Laravel\SendTo`
+4. Replace static calls (`SendTo::telegram(...)`) with DI or the new `Synglify` facade
+5. Update event listeners if you had custom ones
+6. The `facebook/graph-sdk` and `facebook/php-business-sdk` dependencies are no longer needed
 
-- Use the present tense ("Add feature" not "Added feature")
-- Use the imperative mood ("Move cursor to..." not "Moves cursor to...")
-- Limit the first line to 72 characters or less
-- Reference issues and pull requests liberally after the first line
-- Consider starting the commit message with an applicable emoji:
-  - 🎨 `:art:` when improving the format/structure of the code
-  - 🐎 `:racehorse:` when improving performance
-  - 🚱 `:non-potable_water:` when plugging memory leaks
-  - 📝 `:memo:` when writing docs
-  - 🐛 `:bug:` when fixing a bug
-  - 🔥 `:fire:` when removing code or files
-  - 💚 `:green_heart:` when fixing the CI build
-  - ✅ `:white_check_mark:` when adding tests
-  - 🔒 `:lock:` when dealing with security
-  - ⬆️ `:arrow_up:` when upgrading dependencies
-  - ⬇️ `:arrow_down:` when downgrading dependencies
+Key API changes:
+- `SendTo::telegram($msg)` → `$sendTo->telegram($msg)` (instance method)
+- `SendTo::x($msg)` → `$sendTo->x($msg)` or `$sendTo->twitter($msg)`
+- `SendTo::facebook('link', $data)` → `$sendTo->facebook($msg, 'link', $data)`
+- All methods now return `PublishResult` instead of raw arrays
 
-### Reporting Issues
+## License
 
-- Use the issue tracker
-- Describe the bug with a clear and descriptive title
-- Include steps to reproduce the issue
-- Include screenshots if applicable
-- Include your environment details (PHP version, Laravel version, etc.)
-
-### Feature Requests
-
-- Use the issue tracker
-- Describe the feature with a clear and descriptive title
-- Explain why this feature would be useful
-- Include any relevant use cases
-
-### Security
-
-- Report security issues to security@alihesari.com
-- Do not disclose security-related issues publicly until a fix has been announced
-
-### Code of Conduct
-
-By participating in this project, you agree to abide by our Code of Conduct.
-
-## 🤝 Support
-
-If you encounter any issues or have questions, please open an issue on GitHub.
-
-## 🛠 Development and Testing
-
-### Example Project
-This package includes a Laravel 12 example project in the `examples/laravel-12` directory that you can use for development and testing. This setup is particularly useful for:
-
-- Testing new features
-- Debugging issues
-- Contributing to the package
-- Understanding package usage
-- Developing custom integrations
-
-### Setting Up the Development Environment
-
-1. Clone the repository:
-```sh
-git clone https://github.com/alihesari/laravel-social-auto-posting.git
-cd laravel-social-auto-posting
-```
-
-2. Set up the example project:
-```sh
-cd examples/laravel-12
-composer install
-cp .env.example .env
-php artisan key:generate
-```
-
-3. Configure your social media credentials in `.env`:
-```env
-TELEGRAM_BOT_TOKEN=your_telegram_bot_token
-TELEGRAM_BOT_USERNAME=your_bot_username
-TELEGRAM_CHANNEL_USERNAME=your_channel_username
-# ... other credentials ...
-```
-
-4. Link the package for development:
-```sh
-composer require "alihesari/larasap:*"
-```
-
-5. Start the development server:
-```sh
-php artisan serve
-```
-
-### Debugging
-The example project includes VS Code debugging configurations in `.vscode/launch.json` for:
-- Debugging the Laravel application
-- Debugging the Larasap package
-- Debugging Laravel tests
-
-To use the debugger:
-1. Install the PHP Debug extension in VS Code
-2. Set breakpoints in your code
-3. Select the appropriate debug configuration
-4. Start debugging (F5)
-
-### Contributing
-When contributing to the package:
-1. Use the example project to test your changes
-2. Ensure all tests pass
-3. Follow the existing code style
-4. Update documentation as needed
-5. Submit a pull request with a clear description of your changes
+MIT
 
 
