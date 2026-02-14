@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Synglify\Laravel\Tests\Unit;
+namespace Owlstack\Laravel\Tests\Unit;
 
-use Synglify\Laravel\SendTo;
-use Synglify\Laravel\Tests\TestCase;
+use Owlstack\Laravel\SendTo;
+use Owlstack\Laravel\Tests\TestCase;
 
 class SendToTest extends TestCase
 {
@@ -108,19 +108,19 @@ class SendToTest extends TestCase
     public function testTelegramWithSignature(): void
     {
         // Enable signature in config
-        $this->app['config']->set('synglify.platforms.telegram.channel_signature', '— Test Bot');
+        $this->app['config']->set('owlstack.platforms.telegram.channel_signature', '— Test Bot');
 
         // Re-register to pick up new config
-        $this->app->forgetInstance(\Synglify\Core\Config\SynglifyConfig::class);
-        $this->app->forgetInstance(\Synglify\Core\Platforms\PlatformRegistry::class);
-        $this->app->forgetInstance(\Synglify\Core\Platforms\Telegram\TelegramPlatform::class);
-        $this->app->forgetInstance(\Synglify\Core\Publishing\Publisher::class);
+        $this->app->forgetInstance(\Owlstack\Core\Config\OwlstackConfig::class);
+        $this->app->forgetInstance(\Owlstack\Core\Platforms\PlatformRegistry::class);
+        $this->app->forgetInstance(\Owlstack\Core\Platforms\Telegram\TelegramPlatform::class);
+        $this->app->forgetInstance(\Owlstack\Core\Publishing\Publisher::class);
         $this->app->forgetInstance(SendTo::class);
-        $this->app->forgetInstance('synglify');
-        (new \Synglify\Laravel\SynglifyServiceProvider($this->app))->register();
+        $this->app->forgetInstance('owlstack');
+        (new \Owlstack\Laravel\OwlstackServiceProvider($this->app))->register();
 
         // Re-bind the mock HTTP client after re-registration
-        $this->app->instance(\Synglify\Core\Http\Contracts\HttpClientInterface::class, $this->httpClient);
+        $this->app->instance(\Owlstack\Core\Http\Contracts\HttpClientInterface::class, $this->httpClient);
 
         $this->httpClient
             ->expects($this->once())
@@ -302,7 +302,7 @@ class SendToTest extends TestCase
             ->method('post')
             ->willReturn($this->telegramSuccess());
 
-        $post = new \Synglify\Core\Content\Post(
+        $post = new \Owlstack\Core\Content\Post(
             title: 'Direct Post',
             body: 'Published via Post object',
         );
@@ -326,7 +326,7 @@ class SendToTest extends TestCase
                 $this->facebookSuccess(),
             );
 
-        $post = new \Synglify\Core\Content\Post(
+        $post = new \Owlstack\Core\Content\Post(
             title: 'Cross-platform',
             body: 'Post to all platforms',
         );

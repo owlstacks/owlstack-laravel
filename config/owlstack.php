@@ -90,11 +90,11 @@ return [
     */
 
     'proxy' => [
-        'type' => env('SYNGLIFY_PROXY_TYPE', ''),          // 7 for SOCKS5
-        'hostname' => env('SYNGLIFY_PROXY_HOST', ''),       // e.g. localhost
-        'port' => env('SYNGLIFY_PROXY_PORT', ''),           // e.g. 9050
-        'username' => env('SYNGLIFY_PROXY_USERNAME', ''),
-        'password' => env('SYNGLIFY_PROXY_PASSWORD', ''),
+        'type' => env('OWLSTACK_PROXY_TYPE', ''),          // 7 for SOCKS5
+        'hostname' => env('OWLSTACK_PROXY_HOST', ''),       // e.g. localhost
+        'port' => env('OWLSTACK_PROXY_PORT', ''),           // e.g. 9050
+        'username' => env('OWLSTACK_PROXY_USERNAME', ''),
+        'password' => env('OWLSTACK_PROXY_PASSWORD', ''),
     ],
 
 ];

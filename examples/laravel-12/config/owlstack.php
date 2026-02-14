@@ -44,11 +44,11 @@ return [
     */
 
     'proxy' => [
-        'type' => env('SYNGLIFY_PROXY_TYPE', ''),
-        'hostname' => env('SYNGLIFY_PROXY_HOST', ''),
-        'port' => env('SYNGLIFY_PROXY_PORT', ''),
-        'username' => env('SYNGLIFY_PROXY_USERNAME', ''),
-        'password' => env('SYNGLIFY_PROXY_PASSWORD', ''),
+        'type' => env('OWLSTACK_PROXY_TYPE', ''),
+        'hostname' => env('OWLSTACK_PROXY_HOST', ''),
+        'port' => env('OWLSTACK_PROXY_PORT', ''),
+        'username' => env('OWLSTACK_PROXY_USERNAME', ''),
+        'password' => env('OWLSTACK_PROXY_PASSWORD', ''),
     ],
 
 ];

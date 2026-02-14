@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Synglify\Laravel;
+namespace Owlstack\Laravel;
 
-use Synglify\Core\Config\SynglifyConfig;
-use Synglify\Core\Content\Media;
-use Synglify\Core\Content\MediaCollection;
-use Synglify\Core\Content\Post;
-use Synglify\Core\Platforms\PlatformRegistry;
-use Synglify\Core\Platforms\Telegram\TelegramPlatform;
-use Synglify\Core\Publishing\Publisher;
-use Synglify\Core\Publishing\PublishResult;
+use Owlstack\Core\Config\OwlstackConfig;
+use Owlstack\Core\Content\Media;
+use Owlstack\Core\Content\MediaCollection;
+use Owlstack\Core\Content\Post;
+use Owlstack\Core\Platforms\PlatformRegistry;
+use Owlstack\Core\Platforms\Telegram\TelegramPlatform;
+use Owlstack\Core\Publishing\Publisher;
+use Owlstack\Core\Publishing\PublishResult;
 
 /**
  * High-level Laravel API for publishing content to social media platforms.
@@ -22,7 +22,7 @@ use Synglify\Core\Publishing\PublishResult;
  *     }
  *
  * Usage via Facade:
- *     Synglify::telegram('Hello world!');
+ *     Owlstack::telegram('Hello world!');
  */
 class SendTo
 {
@@ -31,7 +31,7 @@ class SendTo
 
     public function __construct(
         private readonly Publisher $publisher,
-        private readonly SynglifyConfig $config,
+        private readonly OwlstackConfig $config,
         private readonly PlatformRegistry $registry,
     ) {
     }

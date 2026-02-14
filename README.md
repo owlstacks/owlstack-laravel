@@ -1,8 +1,8 @@
-# Synglify for Laravel
+# Owlstack for Laravel
 
-Laravel integration for [Synglify Core](https://github.com/alihesari/synglify-core) — publish content to Telegram, X (Twitter), and Facebook from your Laravel application.
+Laravel integration for [Owlstack Core](https://github.com/alihesari/owlstack-core) — publish content to Telegram, X (Twitter), and Facebook from your Laravel application.
 
-> **Note:** This package was previously `alihesari/larasap`. It has been rewritten from scratch to use `synglify/synglify-core` as its engine.
+> **Note:** This package was previously `alihesari/larasap`. It has been rewritten from scratch to use `owlstack/owlstack-core` as its engine.
 
 ## Requirements
 
@@ -12,13 +12,13 @@ Laravel integration for [Synglify Core](https://github.com/alihesari/synglify-co
 ## Installation
 
 ```bash
-composer require synglify/synglify-laravel
+composer require owlstack/owlstack-laravel
 ```
 
 Publish the config file:
 
 ```bash
-php artisan vendor:publish --tag=synglify-config
+php artisan vendor:publish --tag=owlstack-config
 ```
 
 ## Configuration
@@ -47,9 +47,9 @@ FACEBOOK_PAGE_ID=your-page-id
 FACEBOOK_GRAPH_VERSION=v21.0
 
 # Proxy (optional — for restricted networks)
-SYNGLIFY_PROXY_HOST=localhost
-SYNGLIFY_PROXY_PORT=9050
-SYNGLIFY_PROXY_TYPE=7
+OWLSTACK_PROXY_HOST=localhost
+OWLSTACK_PROXY_PORT=9050
+OWLSTACK_PROXY_TYPE=7
 ```
 
 Only platforms with valid credentials are registered. If you leave Twitter credentials empty, only Telegram and Facebook will be available.
@@ -59,7 +59,7 @@ Only platforms with valid credentials are registered. If you leave Twitter crede
 ### Via Dependency Injection (recommended)
 
 ```php
-use Synglify\Laravel\SendTo;
+use Owlstack\Laravel\SendTo;
 
 class PostController extends Controller
 {
@@ -83,15 +83,15 @@ class PostController extends Controller
 ### Via Facade
 
 ```php
-use Synglify\Laravel\Facades\Synglify;
+use Owlstack\Laravel\Facades\Owlstack;
 
-Synglify::telegram('Hello from the facade!');
-Synglify::twitter('Tweet from the facade!');
+Owlstack::telegram('Hello from the facade!');
+Owlstack::twitter('Tweet from the facade!');
 ```
 
 ### Return Value
 
-All methods return a `Synglify\Core\Publishing\PublishResult`:
+All methods return a `Owlstack\Core\Publishing\PublishResult`:
 
 ```php
 $result = $sendTo->telegram('Hello!');
@@ -227,12 +227,12 @@ $sendTo->facebook('Watch this!', 'video', [
 
 ### Using Post Objects Directly
 
-For full control, create `Synglify\Core\Content\Post` objects:
+For full control, create `Owlstack\Core\Content\Post` objects:
 
 ```php
-use Synglify\Core\Content\Post;
-use Synglify\Core\Content\Media;
-use Synglify\Core\Content\MediaCollection;
+use Owlstack\Core\Content\Post;
+use Owlstack\Core\Content\Media;
+use Owlstack\Core\Content\MediaCollection;
 
 $post = new Post(
     title: 'My Article',
@@ -256,13 +256,13 @@ $results = $sendTo->toAll($post);
 
 The package dispatches events through Laravel's event system:
 
-- `Synglify\Core\Events\PostPublished` — fired on successful publish
-- `Synglify\Core\Events\PostFailed` — fired on publish failure
+- `Owlstack\Core\Events\PostPublished` — fired on successful publish
+- `Owlstack\Core\Events\PostFailed` — fired on publish failure
 
 ```php
 // In EventServiceProvider or via Event::listen()
-use Synglify\Core\Events\PostPublished;
-use Synglify\Core\Events\PostFailed;
+use Owlstack\Core\Events\PostPublished;
+use Owlstack\Core\Events\PostFailed;
 
 Event::listen(PostPublished::class, function (PostPublished $event) {
     Log::info("Published to {$event->result->platformName}", [
@@ -279,23 +279,23 @@ Event::listen(PostFailed::class, function (PostFailed $event) {
 
 ## Architecture
 
-This package is a thin wrapper around `synglify/synglify-core`. The architecture:
+This package is a thin wrapper around `owlstack/owlstack-core`. The architecture:
 
 ```
 Your Laravel App
-    └── Synglify\Laravel\SendTo (or Facade)
-        └── Synglify\Core\Publishing\Publisher
-            └── Synglify\Core\Platforms\{Telegram,Twitter,Facebook}Platform
-                └── Synglify\Core\Http\HttpClient (cURL)
+    └── Owlstack\Laravel\SendTo (or Facade)
+        └── Owlstack\Core\Publishing\Publisher
+            └── Owlstack\Core\Platforms\{Telegram,Twitter,Facebook}Platform
+                └── Owlstack\Core\Http\HttpClient (cURL)
 ```
 
 The service provider wires everything together:
-- `SynglifyConfig` — built from `config/synglify.php`
+- `OwlstackConfig` — built from `config/owlstack.php`
 - `HttpClient` — core's cURL client (with optional proxy)
 - Platform instances — only registered if credentials are configured
 - `PlatformRegistry` — holds all active platforms
 - `Publisher` — orchestrates publishing with event dispatch
-- `SendTo` — high-level API bound as `'synglify'` singleton
+- `SendTo` — high-level API bound as `'owlstack'` singleton
 
 ## Testing
 
@@ -308,7 +308,7 @@ composer test
 In your own tests, mock `HttpClientInterface` on the container:
 
 ```php
-use Synglify\Core\Http\Contracts\HttpClientInterface;
+use Owlstack\Core\Http\Contracts\HttpClientInterface;
 
 $mock = $this->createMock(HttpClientInterface::class);
 $mock->method('post')->willReturn([
@@ -324,10 +324,10 @@ $this->app->instance(HttpClientInterface::class, $mock);
 
 If upgrading from the old package:
 
-1. Replace `alihesari/larasap` with `synglify/synglify-laravel` in `composer.json`
-2. Rename `config/larasap.php` → `config/synglify.php` (see new format above)
-3. Replace `Alihesari\Larasap\SendTo` with `Synglify\Laravel\SendTo`
-4. Replace static calls (`SendTo::telegram(...)`) with DI or the new `Synglify` facade
+1. Replace `alihesari/larasap` with `owlstack/owlstack-laravel` in `composer.json`
+2. Rename `config/larasap.php` → `config/owlstack.php` (see new format above)
+3. Replace `Alihesari\Larasap\SendTo` with `Owlstack\Laravel\SendTo`
+4. Replace static calls (`SendTo::telegram(...)`) with DI or the new `Owlstack` facade
 5. Update event listeners if you had custom ones
 6. The `facebook/graph-sdk` and `facebook/php-business-sdk` dependencies are no longer needed
 

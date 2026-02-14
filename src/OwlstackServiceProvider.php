@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-namespace Synglify\Laravel;
+namespace Owlstack\Laravel;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\ServiceProvider;
-use Synglify\Core\Config\PlatformCredentials;
-use Synglify\Core\Config\SynglifyConfig;
-use Synglify\Core\Formatting\CharacterTruncator;
-use Synglify\Core\Formatting\HashtagExtractor;
-use Synglify\Core\Http\Contracts\HttpClientInterface;
-use Synglify\Core\Http\HttpClient;
-use Synglify\Core\Platforms\Facebook\FacebookFormatter;
-use Synglify\Core\Platforms\Facebook\FacebookPlatform;
-use Synglify\Core\Platforms\PlatformRegistry;
-use Synglify\Core\Platforms\Telegram\TelegramFormatter;
-use Synglify\Core\Platforms\Telegram\TelegramPlatform;
-use Synglify\Core\Platforms\Twitter\TwitterFormatter;
-use Synglify\Core\Platforms\Twitter\TwitterPlatform;
-use Synglify\Core\Publishing\Publisher;
-use Synglify\Laravel\Events\LaravelEventDispatcher;
+use Owlstack\Core\Config\PlatformCredentials;
+use Owlstack\Core\Config\OwlstackConfig;
+use Owlstack\Core\Formatting\CharacterTruncator;
+use Owlstack\Core\Formatting\HashtagExtractor;
+use Owlstack\Core\Http\Contracts\HttpClientInterface;
+use Owlstack\Core\Http\HttpClient;
+use Owlstack\Core\Platforms\Facebook\FacebookFormatter;
+use Owlstack\Core\Platforms\Facebook\FacebookPlatform;
+use Owlstack\Core\Platforms\PlatformRegistry;
+use Owlstack\Core\Platforms\Telegram\TelegramFormatter;
+use Owlstack\Core\Platforms\Telegram\TelegramPlatform;
+use Owlstack\Core\Platforms\Twitter\TwitterFormatter;
+use Owlstack\Core\Platforms\Twitter\TwitterPlatform;
+use Owlstack\Core\Publishing\Publisher;
+use Owlstack\Laravel\Events\LaravelEventDispatcher;
 
-class SynglifyServiceProvider extends ServiceProvider
+class OwlstackServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
@@ -30,8 +30,8 @@ class SynglifyServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../config/synglify.php',
-            'synglify',
+            __DIR__ . '/../config/owlstack.php',
+            'owlstack',
         );
 
         $this->registerConfig();
@@ -49,8 +49,8 @@ class SynglifyServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../config/synglify.php' => config_path('synglify.php'),
-            ], 'synglify-config');
+                __DIR__ . '/../config/owlstack.php' => config_path('owlstack.php'),
+            ], 'owlstack-config');
         }
     }
 
@@ -58,8 +58,8 @@ class SynglifyServiceProvider extends ServiceProvider
 
     private function registerConfig(): void
     {
-        $this->app->singleton(SynglifyConfig::class, function ($app) {
-            $platforms = $app['config']->get('synglify.platforms', []);
+        $this->app->singleton(OwlstackConfig::class, function ($app) {
+            $platforms = $app['config']->get('owlstack.platforms', []);
 
             // Filter out platforms with empty credentials
             $configured = [];
@@ -69,10 +69,10 @@ class SynglifyServiceProvider extends ServiceProvider
                 }
             }
 
-            return new SynglifyConfig(
+            return new OwlstackConfig(
                 platforms: $configured,
                 options: [
-                    'proxy' => $app['config']->get('synglify.proxy', []),
+                    'proxy' => $app['config']->get('owlstack.proxy', []),
                 ],
             );
         });
@@ -81,7 +81,7 @@ class SynglifyServiceProvider extends ServiceProvider
     private function registerHttpClient(): void
     {
         $this->app->singleton(HttpClientInterface::class, function ($app) {
-            $proxyConfig = $app['config']->get('synglify.proxy', []);
+            $proxyConfig = $app['config']->get('owlstack.proxy', []);
 
             $proxy = null;
             if (!empty($proxyConfig['hostname']) && !empty($proxyConfig['port'])) {
@@ -123,7 +123,7 @@ class SynglifyServiceProvider extends ServiceProvider
     {
         $this->app->singleton(PlatformRegistry::class, function ($app) {
             $registry = new PlatformRegistry();
-            $config = $app->make(SynglifyConfig::class);
+            $config = $app->make(OwlstackConfig::class);
 
             if ($config->hasPlatform('telegram')) {
                 $registry->register($app->make(TelegramPlatform::class));
@@ -135,25 +135,25 @@ class SynglifyServiceProvider extends ServiceProvider
                 $registry->register($app->make(FacebookPlatform::class));
             }
             if ($config->hasPlatform('reddit')) {
-                $registry->register($app->make(\Synglify\Core\Platforms\Reddit\RedditPlatform::class));
+                $registry->register($app->make(\Owlstack\Core\Platforms\Reddit\RedditPlatform::class));
             }
             if ($config->hasPlatform('discord')) {
-                $registry->register($app->make(\Synglify\Core\Platforms\Discord\DiscordPlatform::class));
+                $registry->register($app->make(\Owlstack\Core\Platforms\Discord\DiscordPlatform::class));
             }
             if ($config->hasPlatform('slack')) {
-                $registry->register($app->make(\Synglify\Core\Platforms\Slack\SlackPlatform::class));
+                $registry->register($app->make(\Owlstack\Core\Platforms\Slack\SlackPlatform::class));
             }
             if ($config->hasPlatform('instagram')) {
-                $registry->register($app->make(\Synglify\Core\Platforms\Instagram\InstagramPlatform::class));
+                $registry->register($app->make(\Owlstack\Core\Platforms\Instagram\InstagramPlatform::class));
             }
             if ($config->hasPlatform('pinterest')) {
-                $registry->register($app->make(\Synglify\Core\Platforms\Pinterest\PinterestPlatform::class));
+                $registry->register($app->make(\Owlstack\Core\Platforms\Pinterest\PinterestPlatform::class));
             }
             if ($config->hasPlatform('whatsapp')) {
-                $registry->register($app->make(\Synglify\Core\Platforms\WhatsApp\WhatsAppPlatform::class));
+                $registry->register($app->make(\Owlstack\Core\Platforms\WhatsApp\WhatsAppPlatform::class));
             }
             if ($config->hasPlatform('tumblr')) {
-                $registry->register($app->make(\Synglify\Core\Platforms\Tumblr\TumblrPlatform::class));
+                $registry->register($app->make(\Owlstack\Core\Platforms\Tumblr\TumblrPlatform::class));
             }
 
             return $registry;
@@ -161,7 +161,7 @@ class SynglifyServiceProvider extends ServiceProvider
 
         // Register individual platform classes
         $this->app->singleton(TelegramPlatform::class, function ($app) {
-            $config = $app->make(SynglifyConfig::class);
+            $config = $app->make(OwlstackConfig::class);
             return new TelegramPlatform(
                 credentials: $config->credentials('telegram'),
                 httpClient: $app->make(HttpClientInterface::class),
@@ -169,7 +169,7 @@ class SynglifyServiceProvider extends ServiceProvider
             );
         });
         $this->app->singleton(TwitterPlatform::class, function ($app) {
-            $config = $app->make(SynglifyConfig::class);
+            $config = $app->make(OwlstackConfig::class);
             return new TwitterPlatform(
                 credentials: $config->credentials('twitter'),
                 httpClient: $app->make(HttpClientInterface::class),
@@ -177,7 +177,7 @@ class SynglifyServiceProvider extends ServiceProvider
             );
         });
         $this->app->singleton(FacebookPlatform::class, function ($app) {
-            $config = $app->make(SynglifyConfig::class);
+            $config = $app->make(OwlstackConfig::class);
             $graphVersion = $config->credentials('facebook')?->get('default_graph_version', 'v21.0') ?? 'v21.0';
             return new FacebookPlatform(
                 credentials: $config->credentials('facebook'),
@@ -186,60 +186,60 @@ class SynglifyServiceProvider extends ServiceProvider
                 graphVersion: $graphVersion,
             );
         });
-        $this->app->singleton(\Synglify\Core\Platforms\Reddit\RedditPlatform::class, function ($app) {
-            $config = $app->make(SynglifyConfig::class);
-            return new \Synglify\Core\Platforms\Reddit\RedditPlatform(
+        $this->app->singleton(\Owlstack\Core\Platforms\Reddit\RedditPlatform::class, function ($app) {
+            $config = $app->make(OwlstackConfig::class);
+            return new \Owlstack\Core\Platforms\Reddit\RedditPlatform(
                 credentials: $config->credentials('reddit'),
                 httpClient: $app->make(HttpClientInterface::class),
-                formatter: $app->make(\Synglify\Core\Platforms\Reddit\RedditFormatter::class),
+                formatter: $app->make(\Owlstack\Core\Platforms\Reddit\RedditFormatter::class),
             );
         });
-        $this->app->singleton(\Synglify\Core\Platforms\Discord\DiscordPlatform::class, function ($app) {
-            $config = $app->make(SynglifyConfig::class);
-            return new \Synglify\Core\Platforms\Discord\DiscordPlatform(
+        $this->app->singleton(\Owlstack\Core\Platforms\Discord\DiscordPlatform::class, function ($app) {
+            $config = $app->make(OwlstackConfig::class);
+            return new \Owlstack\Core\Platforms\Discord\DiscordPlatform(
                 credentials: $config->credentials('discord'),
                 httpClient: $app->make(HttpClientInterface::class),
-                formatter: $app->make(\Synglify\Core\Platforms\Discord\DiscordFormatter::class),
+                formatter: $app->make(\Owlstack\Core\Platforms\Discord\DiscordFormatter::class),
             );
         });
-        $this->app->singleton(\Synglify\Core\Platforms\Slack\SlackPlatform::class, function ($app) {
-            $config = $app->make(SynglifyConfig::class);
-            return new \Synglify\Core\Platforms\Slack\SlackPlatform(
+        $this->app->singleton(\Owlstack\Core\Platforms\Slack\SlackPlatform::class, function ($app) {
+            $config = $app->make(OwlstackConfig::class);
+            return new \Owlstack\Core\Platforms\Slack\SlackPlatform(
                 credentials: $config->credentials('slack'),
                 httpClient: $app->make(HttpClientInterface::class),
-                formatter: $app->make(\Synglify\Core\Platforms\Slack\SlackFormatter::class),
+                formatter: $app->make(\Owlstack\Core\Platforms\Slack\SlackFormatter::class),
             );
         });
-        $this->app->singleton(\Synglify\Core\Platforms\Instagram\InstagramPlatform::class, function ($app) {
-            $config = $app->make(SynglifyConfig::class);
-            return new \Synglify\Core\Platforms\Instagram\InstagramPlatform(
+        $this->app->singleton(\Owlstack\Core\Platforms\Instagram\InstagramPlatform::class, function ($app) {
+            $config = $app->make(OwlstackConfig::class);
+            return new \Owlstack\Core\Platforms\Instagram\InstagramPlatform(
                 credentials: $config->credentials('instagram'),
                 httpClient: $app->make(HttpClientInterface::class),
-                formatter: $app->make(\Synglify\Core\Platforms\Instagram\InstagramFormatter::class),
+                formatter: $app->make(\Owlstack\Core\Platforms\Instagram\InstagramFormatter::class),
             );
         });
-        $this->app->singleton(\Synglify\Core\Platforms\Pinterest\PinterestPlatform::class, function ($app) {
-            $config = $app->make(SynglifyConfig::class);
-            return new \Synglify\Core\Platforms\Pinterest\PinterestPlatform(
+        $this->app->singleton(\Owlstack\Core\Platforms\Pinterest\PinterestPlatform::class, function ($app) {
+            $config = $app->make(OwlstackConfig::class);
+            return new \Owlstack\Core\Platforms\Pinterest\PinterestPlatform(
                 credentials: $config->credentials('pinterest'),
                 httpClient: $app->make(HttpClientInterface::class),
-                formatter: $app->make(\Synglify\Core\Platforms\Pinterest\PinterestFormatter::class),
+                formatter: $app->make(\Owlstack\Core\Platforms\Pinterest\PinterestFormatter::class),
             );
         });
-        $this->app->singleton(\Synglify\Core\Platforms\WhatsApp\WhatsAppPlatform::class, function ($app) {
-            $config = $app->make(SynglifyConfig::class);
-            return new \Synglify\Core\Platforms\WhatsApp\WhatsAppPlatform(
+        $this->app->singleton(\Owlstack\Core\Platforms\WhatsApp\WhatsAppPlatform::class, function ($app) {
+            $config = $app->make(OwlstackConfig::class);
+            return new \Owlstack\Core\Platforms\WhatsApp\WhatsAppPlatform(
                 credentials: $config->credentials('whatsapp'),
                 httpClient: $app->make(HttpClientInterface::class),
-                formatter: $app->make(\Synglify\Core\Platforms\WhatsApp\WhatsAppFormatter::class),
+                formatter: $app->make(\Owlstack\Core\Platforms\WhatsApp\WhatsAppFormatter::class),
             );
         });
-        $this->app->singleton(\Synglify\Core\Platforms\Tumblr\TumblrPlatform::class, function ($app) {
-            $config = $app->make(SynglifyConfig::class);
-            return new \Synglify\Core\Platforms\Tumblr\TumblrPlatform(
+        $this->app->singleton(\Owlstack\Core\Platforms\Tumblr\TumblrPlatform::class, function ($app) {
+            $config = $app->make(OwlstackConfig::class);
+            return new \Owlstack\Core\Platforms\Tumblr\TumblrPlatform(
                 credentials: $config->credentials('tumblr'),
                 httpClient: $app->make(HttpClientInterface::class),
-                formatter: $app->make(\Synglify\Core\Platforms\Tumblr\TumblrFormatter::class),
+                formatter: $app->make(\Owlstack\Core\Platforms\Tumblr\TumblrFormatter::class),
             );
         });
     }
@@ -260,15 +260,15 @@ class SynglifyServiceProvider extends ServiceProvider
 
     private function registerSendTo(): void
     {
-        $this->app->singleton('synglify', function ($app) {
+        $this->app->singleton('owlstack', function ($app) {
             return new SendTo(
                 publisher: $app->make(Publisher::class),
-                config: $app->make(SynglifyConfig::class),
+                config: $app->make(OwlstackConfig::class),
                 registry: $app->make(PlatformRegistry::class),
             );
         });
 
-        $this->app->alias('synglify', SendTo::class);
+        $this->app->alias('owlstack', SendTo::class);
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────

@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Synglify\Core\Content\Post;
-use Synglify\Laravel\Facades\Synglify;
-use Synglify\Laravel\SendTo;
+use Owlstack\Core\Content\Post;
+use Owlstack\Laravel\Facades\Owlstack;
+use Owlstack\Laravel\SendTo;
 
 class SocialMediaController extends Controller
 {
@@ -65,7 +65,7 @@ class SocialMediaController extends Controller
             title: 'Cross-Platform Test',
             body: 'Test post from Laravel 12 to all platforms.',
             url: 'https://example.com',
-            tags: ['laravel', 'synglify'],
+            tags: ['laravel', 'owlstack'],
         );
 
         $results = $sendTo->toAll($post);
@@ -84,7 +84,7 @@ class SocialMediaController extends Controller
      */
     public function testFacade()
     {
-        $result = Synglify::telegram('Hello from the Synglify facade!');
+        $result = Owlstack::telegram('Hello from the Owlstack facade!');
 
         return response()->json([
             'success' => $result->success,

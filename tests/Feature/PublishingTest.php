@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Synglify\Laravel\Tests\Feature;
+namespace Owlstack\Laravel\Tests\Feature;
 
 use Illuminate\Support\Facades\Event;
-use Synglify\Core\Events\PostPublished;
-use Synglify\Core\Events\PostFailed;
-use Synglify\Core\Content\Post;
-use Synglify\Laravel\Facades\Synglify;
-use Synglify\Laravel\SendTo;
-use Synglify\Laravel\Tests\TestCase;
+use Owlstack\Core\Events\PostPublished;
+use Owlstack\Core\Events\PostFailed;
+use Owlstack\Core\Content\Post;
+use Owlstack\Laravel\Facades\Owlstack;
+use Owlstack\Laravel\SendTo;
+use Owlstack\Laravel\Tests\TestCase;
 
 class PublishingTest extends TestCase
 {
@@ -21,7 +21,7 @@ class PublishingTest extends TestCase
             ->method('post')
             ->willReturn($this->telegramSuccess());
 
-        $result = Synglify::telegram('Via facade');
+        $result = Owlstack::telegram('Via facade');
 
         $this->assertTrue($result->success);
     }
@@ -90,7 +90,7 @@ class PublishingTest extends TestCase
         $post = new Post(
             title: 'Full Workflow Title',
             body: 'Full workflow body text for testing.',
-            tags: ['synglify', 'test'],
+            tags: ['owlstack', 'test'],
         );
 
         /** @var SendTo $sendTo */

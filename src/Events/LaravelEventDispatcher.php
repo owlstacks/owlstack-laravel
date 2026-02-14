@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Synglify\Laravel\Events;
+namespace Owlstack\Laravel\Events;
 
 use Illuminate\Contracts\Events\Dispatcher;
-use Synglify\Core\Events\Contracts\EventDispatcherInterface;
+use Owlstack\Core\Events\Contracts\EventDispatcherInterface;
 
 /**
- * Bridges Synglify Core's EventDispatcherInterface to Laravel's event dispatcher.
+ * Bridges Owlstack Core's EventDispatcherInterface to Laravel's event dispatcher.
  *
  * This allows core events (PostPublished, PostFailed) to be dispatched
  * through Laravel's event system, enabling standard Laravel listeners.

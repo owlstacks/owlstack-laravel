@@ -1,11 +1,11 @@
 {
-    "name": "synglify/synglify-laravel",
-    "description": "Laravel integration for Synglify — publish content to Telegram, X (Twitter), and Facebook from your Laravel application.",
+    "name": "owlstack/owlstack-laravel",
+    "description": "Laravel integration for Owlstack — publish content to Telegram, X (Twitter), and Facebook from your Laravel application.",
     "type": "library",
     "license": "MIT",
     "keywords": [
         "laravel",
-        "synglify",
+        "owlstack",
         "social-media",
         "telegram",
         "twitter",
@@ -24,7 +24,7 @@
     ],
     "require": {
         "php": "^8.1",
-        "synglify/synglify-core": "@dev",
+        "owlstack/owlstack-core": "@dev",
         "illuminate/support": "^10.0|^11.0|^12.0",
         "illuminate/contracts": "^10.0|^11.0|^12.0"
     },
@@ -34,28 +34,28 @@
     },
     "autoload": {
         "psr-4": {
-            "Synglify\\Laravel\\": "src/"
+            "Owlstack\\Laravel\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Synglify\\Laravel\\Tests\\": "tests/"
+            "Owlstack\\Laravel\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Synglify\\Laravel\\SynglifyServiceProvider"
+                "Owlstack\\Laravel\\OwlstackServiceProvider"
             ],
             "aliases": {
-                "Synglify": "Synglify\\Laravel\\Facades\\Synglify"
+                "Owlstack": "Owlstack\\Laravel\\Facades\\Owlstack"
             }
         }
     },
     "repositories": [
         {
             "type": "path",
-            "url": "../synglify-core",
+            "url": "../owlstack-core",
             "options": {
                 "symlink": true
             }

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Synglify\Laravel\Tests;
+namespace Owlstack\Laravel\Tests;
 
 use Orchestra\Testbench\TestCase as BaseTestCase;
-use Synglify\Core\Http\Contracts\HttpClientInterface;
-use Synglify\Laravel\SynglifyServiceProvider;
+use Owlstack\Core\Http\Contracts\HttpClientInterface;
+use Owlstack\Laravel\OwlstackServiceProvider;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -24,14 +24,14 @@ abstract class TestCase extends BaseTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            SynglifyServiceProvider::class,
+            OwlstackServiceProvider::class,
         ];
     }
 
     protected function getEnvironmentSetUp($app): void
     {
         // Configure all platforms with test credentials
-        $app['config']->set('synglify.platforms.telegram', [
+        $app['config']->set('owlstack.platforms.telegram', [
             'api_token' => 'test-token-123',
             'bot_username' => 'test_bot',
             'channel_username' => '@test_channel',
@@ -39,14 +39,14 @@ abstract class TestCase extends BaseTestCase
             'parse_mode' => 'HTML',
         ]);
 
-        $app['config']->set('synglify.platforms.twitter', [
+        $app['config']->set('owlstack.platforms.twitter', [
             'consumer_key' => 'test_consumer_key',
             'consumer_secret' => 'test_consumer_secret',
             'access_token' => 'test_access_token',
             'access_token_secret' => 'test_access_token_secret',
         ]);
 
-        $app['config']->set('synglify.platforms.facebook', [
+        $app['config']->set('owlstack.platforms.facebook', [
             'app_id' => 'test_app_id',
             'app_secret' => 'test_app_secret',
             'page_access_token' => 'test_page_token',

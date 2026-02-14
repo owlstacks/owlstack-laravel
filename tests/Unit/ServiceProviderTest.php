@@ -2,39 +2,39 @@
 
 declare(strict_types=1);
 
-namespace Synglify\Laravel\Tests\Unit;
+namespace Owlstack\Laravel\Tests\Unit;
 
-use Synglify\Core\Config\SynglifyConfig;
-use Synglify\Core\Http\Contracts\HttpClientInterface;
-use Synglify\Core\Platforms\PlatformRegistry;
-use Synglify\Core\Platforms\Telegram\TelegramPlatform;
-use Synglify\Core\Platforms\Twitter\TwitterPlatform;
-use Synglify\Core\Platforms\Facebook\FacebookPlatform;
-use Synglify\Core\Publishing\Publisher;
-use Synglify\Laravel\Events\LaravelEventDispatcher;
-use Synglify\Laravel\SendTo;
-use Synglify\Laravel\SynglifyServiceProvider;
-use Synglify\Laravel\Tests\TestCase;
+use Owlstack\Core\Config\OwlstackConfig;
+use Owlstack\Core\Http\Contracts\HttpClientInterface;
+use Owlstack\Core\Platforms\PlatformRegistry;
+use Owlstack\Core\Platforms\Telegram\TelegramPlatform;
+use Owlstack\Core\Platforms\Twitter\TwitterPlatform;
+use Owlstack\Core\Platforms\Facebook\FacebookPlatform;
+use Owlstack\Core\Publishing\Publisher;
+use Owlstack\Laravel\Events\LaravelEventDispatcher;
+use Owlstack\Laravel\SendTo;
+use Owlstack\Laravel\OwlstackServiceProvider;
+use Owlstack\Laravel\Tests\TestCase;
 
 class ServiceProviderTest extends TestCase
 {
     public function testServiceProviderIsRegistered(): void
     {
         $this->assertInstanceOf(
-            SynglifyServiceProvider::class,
-            $this->app->getProvider(SynglifyServiceProvider::class),
+            OwlstackServiceProvider::class,
+            $this->app->getProvider(OwlstackServiceProvider::class),
         );
     }
 
-    public function testSynglifyConfigIsBound(): void
+    public function testOwlstackConfigIsBound(): void
     {
-        $config = $this->app->make(SynglifyConfig::class);
-        $this->assertInstanceOf(SynglifyConfig::class, $config);
+        $config = $this->app->make(OwlstackConfig::class);
+        $this->assertInstanceOf(OwlstackConfig::class, $config);
     }
 
     public function testConfigHasAllPlatforms(): void
     {
-        $config = $this->app->make(SynglifyConfig::class);
+        $config = $this->app->make(OwlstackConfig::class);
 
         $this->assertTrue($config->hasPlatform('telegram'));
         $this->assertTrue($config->hasPlatform('twitter'));
@@ -44,7 +44,7 @@ class ServiceProviderTest extends TestCase
     public function testConfigFiltersPlatformsWithEmptyCredentials(): void
     {
         // Override twitter config with empty credentials
-        $this->app['config']->set('synglify.platforms.twitter', [
+        $this->app['config']->set('owlstack.platforms.twitter', [
             'consumer_key' => '',
             'consumer_secret' => '',
             'access_token' => '',
@@ -52,10 +52,10 @@ class ServiceProviderTest extends TestCase
         ]);
 
         // Re-register so the singleton is rebuilt
-        $this->app->forgetInstance(SynglifyConfig::class);
-        (new SynglifyServiceProvider($this->app))->register();
+        $this->app->forgetInstance(OwlstackConfig::class);
+        (new OwlstackServiceProvider($this->app))->register();
 
-        $config = $this->app->make(SynglifyConfig::class);
+        $config = $this->app->make(OwlstackConfig::class);
         $this->assertFalse($config->hasPlatform('twitter'));
         $this->assertTrue($config->hasPlatform('telegram'));
     }
@@ -118,7 +118,7 @@ class ServiceProviderTest extends TestCase
 
     public function testSendToIsBound(): void
     {
-        $sendTo = $this->app->make('synglify');
+        $sendTo = $this->app->make('owlstack');
         $this->assertInstanceOf(SendTo::class, $sendTo);
     }
 
@@ -130,12 +130,12 @@ class ServiceProviderTest extends TestCase
 
     public function testConfigPublishing(): void
     {
-        $this->artisan('vendor:publish', ['--tag' => 'synglify-config', '--force' => true]);
+        $this->artisan('vendor:publish', ['--tag' => 'owlstack-config', '--force' => true]);
 
         // The config file should have been published
-        $this->assertFileExists(config_path('synglify.php'));
+        $this->assertFileExists(config_path('owlstack.php'));
 
         // Clean up
-        @unlink(config_path('synglify.php'));
+        @unlink(config_path('owlstack.php'));
     }
 }
