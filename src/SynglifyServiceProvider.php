@@ -128,13 +128,32 @@ class SynglifyServiceProvider extends ServiceProvider
             if ($config->hasPlatform('telegram')) {
                 $registry->register($app->make(TelegramPlatform::class));
             }
-
             if ($config->hasPlatform('twitter')) {
                 $registry->register($app->make(TwitterPlatform::class));
             }
-
             if ($config->hasPlatform('facebook')) {
                 $registry->register($app->make(FacebookPlatform::class));
+            }
+            if ($config->hasPlatform('reddit')) {
+                $registry->register($app->make(\Synglify\Core\Platforms\Reddit\RedditPlatform::class));
+            }
+            if ($config->hasPlatform('discord')) {
+                $registry->register($app->make(\Synglify\Core\Platforms\Discord\DiscordPlatform::class));
+            }
+            if ($config->hasPlatform('slack')) {
+                $registry->register($app->make(\Synglify\Core\Platforms\Slack\SlackPlatform::class));
+            }
+            if ($config->hasPlatform('instagram')) {
+                $registry->register($app->make(\Synglify\Core\Platforms\Instagram\InstagramPlatform::class));
+            }
+            if ($config->hasPlatform('pinterest')) {
+                $registry->register($app->make(\Synglify\Core\Platforms\Pinterest\PinterestPlatform::class));
+            }
+            if ($config->hasPlatform('whatsapp')) {
+                $registry->register($app->make(\Synglify\Core\Platforms\WhatsApp\WhatsAppPlatform::class));
+            }
+            if ($config->hasPlatform('tumblr')) {
+                $registry->register($app->make(\Synglify\Core\Platforms\Tumblr\TumblrPlatform::class));
             }
 
             return $registry;
@@ -143,33 +162,84 @@ class SynglifyServiceProvider extends ServiceProvider
         // Register individual platform classes
         $this->app->singleton(TelegramPlatform::class, function ($app) {
             $config = $app->make(SynglifyConfig::class);
-
             return new TelegramPlatform(
                 credentials: $config->credentials('telegram'),
                 httpClient: $app->make(HttpClientInterface::class),
                 formatter: $app->make(TelegramFormatter::class),
             );
         });
-
         $this->app->singleton(TwitterPlatform::class, function ($app) {
             $config = $app->make(SynglifyConfig::class);
-
             return new TwitterPlatform(
                 credentials: $config->credentials('twitter'),
                 httpClient: $app->make(HttpClientInterface::class),
                 formatter: $app->make(TwitterFormatter::class),
             );
         });
-
         $this->app->singleton(FacebookPlatform::class, function ($app) {
             $config = $app->make(SynglifyConfig::class);
             $graphVersion = $config->credentials('facebook')?->get('default_graph_version', 'v21.0') ?? 'v21.0';
-
             return new FacebookPlatform(
                 credentials: $config->credentials('facebook'),
                 httpClient: $app->make(HttpClientInterface::class),
                 formatter: $app->make(FacebookFormatter::class),
                 graphVersion: $graphVersion,
+            );
+        });
+        $this->app->singleton(\Synglify\Core\Platforms\Reddit\RedditPlatform::class, function ($app) {
+            $config = $app->make(SynglifyConfig::class);
+            return new \Synglify\Core\Platforms\Reddit\RedditPlatform(
+                credentials: $config->credentials('reddit'),
+                httpClient: $app->make(HttpClientInterface::class),
+                formatter: $app->make(\Synglify\Core\Platforms\Reddit\RedditFormatter::class),
+            );
+        });
+        $this->app->singleton(\Synglify\Core\Platforms\Discord\DiscordPlatform::class, function ($app) {
+            $config = $app->make(SynglifyConfig::class);
+            return new \Synglify\Core\Platforms\Discord\DiscordPlatform(
+                credentials: $config->credentials('discord'),
+                httpClient: $app->make(HttpClientInterface::class),
+                formatter: $app->make(\Synglify\Core\Platforms\Discord\DiscordFormatter::class),
+            );
+        });
+        $this->app->singleton(\Synglify\Core\Platforms\Slack\SlackPlatform::class, function ($app) {
+            $config = $app->make(SynglifyConfig::class);
+            return new \Synglify\Core\Platforms\Slack\SlackPlatform(
+                credentials: $config->credentials('slack'),
+                httpClient: $app->make(HttpClientInterface::class),
+                formatter: $app->make(\Synglify\Core\Platforms\Slack\SlackFormatter::class),
+            );
+        });
+        $this->app->singleton(\Synglify\Core\Platforms\Instagram\InstagramPlatform::class, function ($app) {
+            $config = $app->make(SynglifyConfig::class);
+            return new \Synglify\Core\Platforms\Instagram\InstagramPlatform(
+                credentials: $config->credentials('instagram'),
+                httpClient: $app->make(HttpClientInterface::class),
+                formatter: $app->make(\Synglify\Core\Platforms\Instagram\InstagramFormatter::class),
+            );
+        });
+        $this->app->singleton(\Synglify\Core\Platforms\Pinterest\PinterestPlatform::class, function ($app) {
+            $config = $app->make(SynglifyConfig::class);
+            return new \Synglify\Core\Platforms\Pinterest\PinterestPlatform(
+                credentials: $config->credentials('pinterest'),
+                httpClient: $app->make(HttpClientInterface::class),
+                formatter: $app->make(\Synglify\Core\Platforms\Pinterest\PinterestFormatter::class),
+            );
+        });
+        $this->app->singleton(\Synglify\Core\Platforms\WhatsApp\WhatsAppPlatform::class, function ($app) {
+            $config = $app->make(SynglifyConfig::class);
+            return new \Synglify\Core\Platforms\WhatsApp\WhatsAppPlatform(
+                credentials: $config->credentials('whatsapp'),
+                httpClient: $app->make(HttpClientInterface::class),
+                formatter: $app->make(\Synglify\Core\Platforms\WhatsApp\WhatsAppFormatter::class),
+            );
+        });
+        $this->app->singleton(\Synglify\Core\Platforms\Tumblr\TumblrPlatform::class, function ($app) {
+            $config = $app->make(SynglifyConfig::class);
+            return new \Synglify\Core\Platforms\Tumblr\TumblrPlatform(
+                credentials: $config->credentials('tumblr'),
+                httpClient: $app->make(HttpClientInterface::class),
+                formatter: $app->make(\Synglify\Core\Platforms\Tumblr\TumblrFormatter::class),
             );
         });
     }
@@ -212,6 +282,13 @@ class SynglifyServiceProvider extends ServiceProvider
             'telegram' => ['api_token'],
             'twitter' => ['consumer_key', 'consumer_secret', 'access_token', 'access_token_secret'],
             'facebook' => ['app_id', 'app_secret', 'page_access_token', 'page_id'],
+            'reddit' => ['client_id', 'client_secret', 'access_token', 'username'],
+            'discord' => ['bot_token', 'channel_id'],
+            'slack' => ['bot_token', 'channel'],
+            'instagram' => ['access_token', 'instagram_account_id'],
+            'pinterest' => ['access_token', 'board_id'],
+            'whatsapp' => ['access_token', 'phone_number_id'],
+            'tumblr' => ['access_token', 'blog_identifier'],
             default => [],
         };
 
