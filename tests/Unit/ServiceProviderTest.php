@@ -80,7 +80,8 @@ class ServiceProviderTest extends TestCase
         $this->assertTrue($registry->has('telegram'));
         $this->assertTrue($registry->has('twitter'));
         $this->assertTrue($registry->has('facebook'));
-        $this->assertCount(3, $registry->names());
+        $this->assertTrue($registry->has('linkedin'));
+        $this->assertCount(4, $registry->names());
     }
 
     public function testTelegramPlatformIsBound(): void

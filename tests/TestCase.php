@@ -53,6 +53,12 @@ abstract class TestCase extends BaseTestCase
             'page_id' => '123456789',
             'default_graph_version' => 'v21.0',
         ]);
+
+        $app['config']->set('owlstack.platforms.linkedin', [
+            'access_token' => 'test_linkedin_token',
+            'person_id' => 'test_person_id',
+            'organization_id' => '',
+        ]);
     }
 
     /**
@@ -89,6 +95,18 @@ abstract class TestCase extends BaseTestCase
         return [
             'status' => 200,
             'headers' => [],
+            'body' => json_encode(['id' => $id]),
+        ];
+    }
+
+    /**
+     * Helper: build a successful LinkedIn API response body.
+     */
+    protected function linkedinSuccess(string $id = 'urn:li:share:123456789'): array
+    {
+        return [
+            'status' => 201,
+            'headers' => ['x-restli-id' => $id],
             'body' => json_encode(['id' => $id]),
         ];
     }

@@ -293,6 +293,27 @@ class SendToTest extends TestCase
         $this->assertSame('facebook', $result->platformName);
     }
 
+    // ── LinkedIn ─────────────────────────────────────────────────────────
+
+    public function testLinkedInTextPost(): void
+    {
+        $this->httpClient
+            ->expects($this->once())
+            ->method('post')
+            ->with(
+                $this->stringContains('api.linkedin.com'),
+                $this->anything(),
+            )
+            ->willReturn($this->linkedinSuccess());
+
+        /** @var SendTo $sendTo */
+        $sendTo = $this->app->make(SendTo::class);
+        $result = $sendTo->linkedin('Hello LinkedIn!');
+
+        $this->assertTrue($result->success);
+        $this->assertSame('linkedin', $result->platformName);
+    }
+
     // ── Generic ──────────────────────────────────────────────────────────
 
     public function testPublishDirectly(): void
@@ -316,14 +337,15 @@ class SendToTest extends TestCase
 
     public function testToAllPublishesToAllPlatforms(): void
     {
-        // Expect 3 calls — one per platform
+        // Expect 4 calls — one per platform
         $this->httpClient
-            ->expects($this->exactly(3))
+            ->expects($this->exactly(4))
             ->method('post')
             ->willReturnOnConsecutiveCalls(
                 $this->telegramSuccess(),
                 $this->twitterSuccess(),
                 $this->facebookSuccess(),
+                $this->linkedinSuccess(),
             );
 
         $post = new \Owlstack\Core\Content\Post(
@@ -335,10 +357,11 @@ class SendToTest extends TestCase
         $sendTo = $this->app->make(SendTo::class);
         $results = $sendTo->toAll($post);
 
-        $this->assertCount(3, $results);
+        $this->assertCount(4, $results);
         $this->assertArrayHasKey('telegram', $results);
         $this->assertArrayHasKey('twitter', $results);
         $this->assertArrayHasKey('facebook', $results);
+        $this->assertArrayHasKey('linkedin', $results);
     }
 
     public function testTelegramFailureReturnsFailedResult(): void
