@@ -1,0 +1,31 @@
+You are working on owlstack-laravel, a Laravel integration package for the Owlstack social media publishing platform.
+
+This is a thin wrapper around owlstack/owlstack-core. All platform logic, formatting, and HTTP transport live in the core package. Do not duplicate core behavior.
+
+Key conventions:
+- PHP 8.1+ with declare(strict_types=1) in every file
+- PSR-12 coding standard, PSR-4 autoloading
+- Fully typed parameters and return types
+- Readonly constructor promotion for value objects
+- One class per file
+
+Architecture:
+- OwlstackServiceProvider registers core services into the Laravel container
+- SendTo is the high-level publishing API (telegram(), twitter(), facebook(), etc.)
+- Owlstack facade proxies to SendTo
+- LaravelEventDispatcher bridges core events to Laravel's event system
+- Config in config/owlstack.php, populated from .env
+- Supports Laravel 10.x, 11.x, 12.x
+
+Testing:
+- Run: ./vendor/bin/phpunit or composer test
+- Uses Orchestra Testbench for Laravel testing
+- Mock HttpClientInterface to avoid real API calls
+- Unit tests in tests/Unit/, feature tests in tests/Feature/
+
+Do not:
+- Duplicate platform logic from owlstack-core
+- Hardcode API URLs or credentials
+- Commit real API tokens
+- Use dd(), var_dump, or print_r in production code
+- Suppress errors with @
