@@ -1,6 +1,6 @@
 {
     "name": "owlstack/owlstack-laravel",
-    "description": "Laravel integration for Owlstack — publish content to Telegram, X (Twitter), and Facebook from your Laravel application.",
+    "description": "Laravel integration for Owlstack — publish content to Telegram, X (Twitter), Facebook, LinkedIn, Instagram, Discord, Slack, Reddit, Pinterest, WhatsApp, and Tumblr from your Laravel application.",
     "type": "library",
     "license": "MIT",
     "keywords": [
@@ -11,6 +11,14 @@
         "twitter",
         "x",
         "facebook",
+        "linkedin",
+        "instagram",
+        "discord",
+        "slack",
+        "reddit",
+        "pinterest",
+        "whatsapp",
+        "tumblr",
         "content-syndication",
         "publishing"
     ],
@@ -22,9 +30,14 @@
             "role": "Developer"
         }
     ],
+    "homepage": "https://github.com/alihesari/owlstack-laravel",
+    "support": {
+        "issues": "https://github.com/alihesari/owlstack-laravel/issues",
+        "source": "https://github.com/alihesari/owlstack-laravel"
+    },
     "require": {
         "php": "^8.1",
-        "owlstack/owlstack-core": "@dev",
+        "owlstack/owlstack-core": "^1.0",
         "illuminate/support": "^10.0|^11.0|^12.0",
         "illuminate/contracts": "^10.0|^11.0|^12.0"
     },
@@ -52,16 +65,10 @@
             }
         }
     },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../owlstack-core",
-            "options": {
-                "symlink": true
-            }
-        }
-    ],
-    "minimum-stability": "dev",
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
+    "minimum-stability": "stable",
     "prefer-stable": true,
     "config": {
         "sort-packages": true
