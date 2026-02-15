@@ -3,110 +3,107 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Alihesari\Larasap\SendTo;
+use Owlstack\Core\Content\Post;
+use Owlstack\Laravel\Facades\Owlstack;
+use Owlstack\Laravel\SendTo;
 
 class SocialMediaController extends Controller
 {
     /**
-     * Test Telegram posting
+     * Test Telegram posting.
      */
-    public function testTelegram()
+    public function testTelegram(SendTo $sendTo)
     {
-        try {
-            $result = SendTo::telegram('Test message from Laravel 12');
-            return response()->json(['telegram' => $result]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        $result = $sendTo->telegram('Test message from Laravel 12');
+
+        return response()->json([
+            'success' => $result->success,
+            'platform' => $result->platformName,
+            'external_id' => $result->externalId,
+            'error' => $result->error,
+        ]);
     }
 
     /**
-     * Test X (Twitter) posting
+     * Test X (Twitter) posting.
      */
-    public function testX()
+    public function testX(SendTo $sendTo)
     {
-        try {
-            $result = SendTo::x('Test tweet from Laravel 12');
-            return response()->json(['x' => $result]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        $result = $sendTo->x('Test tweet from Laravel 12');
+
+        return response()->json([
+            'success' => $result->success,
+            'platform' => $result->platformName,
+            'external_id' => $result->externalId,
+            'error' => $result->error,
+        ]);
     }
 
     /**
-     * Test Facebook posting
+     * Test Facebook posting.
      */
-    public function testFacebook()
+    public function testFacebook(SendTo $sendTo)
     {
-        try {
-            // Enable debug mode for detailed logging
-            \Alihesari\Larasap\Services\Facebook\Api::enableDebugMode();
+        $result = $sendTo->facebook('Test post from Laravel 12', 'link', [
+            'link' => 'https://example.com',
+        ]);
 
-            // Log the configuration (without sensitive data)
-            \Illuminate\Support\Facades\Log::debug('Facebook API Configuration:', [
-                'app_id' => config('larasap.facebook.app_id'),
-                'page_id' => config('larasap.facebook.page_id'),
-                'debug_mode' => config('larasap.facebook.debug_mode'),
-                'beta_mode' => config('larasap.facebook.enable_beta_mode')
-            ]);
-
-            // Format the request data properly
-            $data = [
-                'link' => 'https://example.com',
-                'message' => 'Test post from Laravel 12'
-            ];
-
-            // Add privacy settings if needed
-            if (config('larasap.facebook.default_privacy.value')) {
-                $data['privacy'] = [
-                    'value' => config('larasap.facebook.default_privacy.value', 'EVERYONE')
-                ];
-            }
-
-            $result = SendTo::facebook('link', $data);
-
-            if (!$result || !isset($result['id'])) {
-                throw new \Exception('Invalid response from Facebook API');
-            }
-
-            return response()->json(['facebook' => $result]);
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Facebook API Error:', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        return response()->json([
+            'success' => $result->success,
+            'platform' => $result->platformName,
+            'external_id' => $result->externalId,
+            'error' => $result->error,
+        ]);
     }
 
     /**
-     * Test all social media platforms
+     * Test LinkedIn posting.
      */
-    public function testAll()
+    public function testLinkedIn(SendTo $sendTo)
     {
-        try {
-            // Test Telegram posting
-            $telegramResult = SendTo::telegram('Test message from Laravel 12');
-            
-            // Test X (Twitter) posting
-            $xResult = SendTo::x('Test tweet from Laravel 12');
-            
-            // Test Facebook posting
-            $facebookResult = SendTo::facebook('link', [
-                'link' => 'https://example.com',
-                'message' => 'Test post from Laravel 12',
-                'privacy' => [
-                    'value' => 'EVERYONE'
-                ]
-            ]);
-            
-            return response()->json([
-                'telegram' => $telegramResult,
-                'x' => $xResult,
-                'facebook' => $facebookResult
-            ]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        $result = $sendTo->linkedin('Test post from Laravel 12');
+
+        return response()->json([
+            'success' => $result->success,
+            'platform' => $result->platformName,
+            'external_id' => $result->externalId,
+            'error' => $result->error,
+        ]);
+    }
+
+    /**
+     * Test all platforms at once.
+     */
+    public function testAll(SendTo $sendTo)
+    {
+        $post = new Post(
+            title: 'Cross-Platform Test',
+            body: 'Test post from Laravel 12 to all platforms.',
+            url: 'https://example.com',
+            tags: ['laravel', 'owlstack'],
+        );
+
+        $results = $sendTo->toAll($post);
+
+        return response()->json(
+            collect($results)->map(fn ($r) => [
+                'success' => $r->success,
+                'external_id' => $r->externalId,
+                'error' => $r->error,
+            ])->all(),
+        );
+    }
+
+    /**
+     * Demo: Using the Facade instead of DI.
+     */
+    public function testFacade()
+    {
+        $result = Owlstack::telegram('Hello from the Owlstack facade!');
+
+        return response()->json([
+            'success' => $result->success,
+            'external_id' => $result->externalId,
+        ]);
     }
 } 

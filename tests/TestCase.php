@@ -1,88 +1,113 @@
 <?php
 
-namespace Alihesari\Larasap\Tests;
+declare(strict_types=1);
+
+namespace Owlstack\Laravel\Tests;
 
 use Orchestra\Testbench\TestCase as BaseTestCase;
-use Illuminate\Support\Facades\Http;
-use Alihesari\Larasap\LarasapServiceProvider;
-use Alihesari\Larasap\Facades\X;
+use Owlstack\Core\Http\Contracts\HttpClientInterface;
+use Owlstack\Laravel\OwlstackServiceProvider;
 
-class TestCase extends BaseTestCase
+abstract class TestCase extends BaseTestCase
 {
+    protected HttpClientInterface $httpClient;
+
     protected function setUp(): void
     {
         parent::setUp();
-        
-        // Set up config values
-        $this->app['config']->set([
-            'larasap.telegram.api_token' => '123456789:test_token',
-            'larasap.telegram.bot_username' => 'test_bot',
-            'larasap.telegram.channel_username' => '@test_channel',
-            'larasap.telegram.channel_signature' => '- Test Signature',
-            'larasap.telegram.proxy' => false,
 
-            'larasap.x.consumer_key' => 'test_key',
-            'larasap.x.consumer_secret' => 'test_secret',
-            'larasap.x.access_token' => 'test_token',
-            'larasap.x.access_token_secret' => 'test_token_secret',
-
-            'larasap.facebook.app_id' => '123456789',
-            'larasap.facebook.app_secret' => 'test_app_secret',
-            'larasap.facebook.access_token' => 'EAAxxxxx',
-            'larasap.facebook.page_id' => '123456789',
-            'larasap.facebook.default_graph_version' => 'v18.0',
-        ]);
-
-        // Mock HTTP requests
-        Http::fake([
-            // Mock Telegram API requests
-            'https://api.telegram.org/bot123456789:test_token/*' => Http::response(['ok' => true, 'result' => ['message_id' => 123]], 200),
-            
-            // Mock X API requests
-            'https://api.x.com/2/*' => Http::response(['id' => '123456789'], 200),
-            'https://upload.x.com/1.1/*' => Http::response(['media_id_string' => '123456789'], 200),
-            
-            // Mock Facebook API requests
-            'https://graph.facebook.com/*' => Http::response(['id' => '123456789_123456789'], 200),
-        ]);
+        // Replace the real HttpClient with a mock
+        $this->httpClient = $this->createMock(HttpClientInterface::class);
+        $this->app->instance(HttpClientInterface::class, $this->httpClient);
     }
 
-    protected function getPackageProviders($app)
+    protected function getPackageProviders($app): array
     {
         return [
-            LarasapServiceProvider::class,
+            OwlstackServiceProvider::class,
         ];
     }
 
-    protected function getEnvironmentSetUp($app)
+    protected function getEnvironmentSetUp($app): void
     {
-        // Setup default database to use sqlite :memory:
-        $app['config']->set('database.default', 'testbench');
-        $app['config']->set('database.connections.testbench', [
-            'driver'   => 'sqlite',
-            'database' => ':memory:',
-            'prefix'   => '',
+        // Configure all platforms with test credentials
+        $app['config']->set('owlstack.platforms.telegram', [
+            'api_token' => 'test-token-123',
+            'bot_username' => 'test_bot',
+            'channel_username' => '@test_channel',
+            'channel_signature' => '',
+            'parse_mode' => 'HTML',
         ]);
 
-        // Set up package configuration
-        $app['config']->set('larasap.x.consumer_key', 'test_key');
-        $app['config']->set('larasap.x.consumer_secret', 'test_secret');
-        $app['config']->set('larasap.x.access_token', 'test_token');
-        $app['config']->set('larasap.x.access_token_secret', 'test_token_secret');
+        $app['config']->set('owlstack.platforms.twitter', [
+            'consumer_key' => 'test_consumer_key',
+            'consumer_secret' => 'test_consumer_secret',
+            'access_token' => 'test_access_token',
+            'access_token_secret' => 'test_access_token_secret',
+        ]);
+
+        $app['config']->set('owlstack.platforms.facebook', [
+            'app_id' => 'test_app_id',
+            'app_secret' => 'test_app_secret',
+            'page_access_token' => 'test_page_token',
+            'page_id' => '123456789',
+            'default_graph_version' => 'v21.0',
+        ]);
+
+        $app['config']->set('owlstack.platforms.linkedin', [
+            'access_token' => 'test_linkedin_token',
+            'person_id' => 'test_person_id',
+            'organization_id' => '',
+        ]);
     }
 
-    protected function getPackageAliases($app)
+    /**
+     * Helper: build a successful Telegram API response body.
+     */
+    protected function telegramSuccess(array $result = ['message_id' => 123]): array
     {
         return [
-            'X' => X::class,
+            'status' => 200,
+            'headers' => [],
+            'body' => json_encode(['ok' => true, 'result' => $result]),
         ];
     }
 
-    protected function mockXApi()
+    /**
+     * Helper: build a successful Twitter API response body.
+     */
+    protected function twitterSuccess(string $id = '1234567890'): array
     {
-        Http::fake([
-            'https://api.x.com/1.1/*' => Http::response(['id' => '123456789'], 200),
-            'https://upload.x.com/1.1/*' => Http::response(['media_id_string' => '123456789'], 200),
-        ]);
+        return [
+            'status' => 201,
+            'headers' => [],
+            'body' => json_encode([
+                'data' => ['id' => $id, 'text' => 'test'],
+            ]),
+        ];
     }
-} 
+
+    /**
+     * Helper: build a successful Facebook API response body.
+     */
+    protected function facebookSuccess(string $id = '123456789_987654321'): array
+    {
+        return [
+            'status' => 200,
+            'headers' => [],
+            'body' => json_encode(['id' => $id]),
+        ];
+    }
+
+    /**
+     * Helper: build a successful LinkedIn API response body.
+     */
+    protected function linkedinSuccess(string $id = 'urn:li:share:123456789'): array
+    {
+        return [
+            'status' => 201,
+            'headers' => ['x-restli-id' => $id],
+            'body' => json_encode(['id' => $id]),
+        ];
+    }
+}

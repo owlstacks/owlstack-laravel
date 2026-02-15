@@ -1,55 +1,74 @@
 {
-    "name": "alihesari/larasap",
-    "description": "Laravel social auto posting (Larasap) lets you automatically post all your content to social networks such as Telegram Channel, X (Twitter), and Facebook.",
+    "name": "owlstack/owlstack-laravel",
+    "description": "Laravel integration for Owlstack — publish content to Telegram, X (Twitter), Facebook, LinkedIn, Instagram, Discord, Slack, Reddit, Pinterest, WhatsApp, and Tumblr from your Laravel application.",
     "type": "library",
     "license": "MIT",
     "keywords": [
         "laravel",
-        "social network",
+        "owlstack",
+        "social-media",
         "telegram",
         "twitter",
         "x",
-        "facebook"
+        "facebook",
+        "linkedin",
+        "instagram",
+        "discord",
+        "slack",
+        "reddit",
+        "pinterest",
+        "whatsapp",
+        "tumblr",
+        "content-syndication",
+        "publishing"
     ],
     "authors": [
         {
             "name": "Ali Hesari",
-            "email": "alihesari.com@gmail.com",
+            "email": "ali@alihesari.com",
             "homepage": "https://alihesari.com",
             "role": "Developer"
         }
     ],
+    "homepage": "https://github.com/alihesari/owlstack-laravel",
+    "support": {
+        "issues": "https://github.com/alihesari/owlstack-laravel/issues",
+        "source": "https://github.com/alihesari/owlstack-laravel"
+    },
     "require": {
-        "php": "^8.0",
-        "facebook/graph-sdk": "^5.1",
-        "facebook/php-business-sdk": "^16.0",
-        "illuminate/support": "^8.0|^9.0|^10.0|^11.0|^12.0"
+        "php": "^8.1",
+        "owlstack/owlstack-core": "^1.0",
+        "illuminate/support": "^10.0|^11.0|^12.0",
+        "illuminate/contracts": "^10.0|^11.0|^12.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.0",
-        "orchestra/testbench": "^6.0|^7.0|^8.0|^9.0"
+        "phpunit/phpunit": "^10.0|^11.0",
+        "orchestra/testbench": "^8.0|^9.0|^10.0"
     },
     "autoload": {
         "psr-4": {
-            "Alihesari\\Larasap\\": "src/"
+            "Owlstack\\Laravel\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Alihesari\\Larasap\\Tests\\": "tests/"
+            "Owlstack\\Laravel\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Alihesari\\Larasap\\LarasapServiceProvider"
+                "Owlstack\\Laravel\\OwlstackServiceProvider"
             ],
             "aliases": {
-                "X": "Alihesari\\Larasap\\Facades\\X"
+                "Owlstack": "Owlstack\\Laravel\\Facades\\Owlstack"
             }
         }
     },
-    "minimum-stability": "dev",
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
+    "minimum-stability": "stable",
     "prefer-stable": true,
     "config": {
         "sort-packages": true

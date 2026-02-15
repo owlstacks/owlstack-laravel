@@ -10,7 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "alihesari/larasap": "*",
+        "owlstack/owlstack-laravel": "*",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1"
     },
@@ -70,12 +70,7 @@
             "php-http/discovery": true
         }
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../.."
-        }
-    ]
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
 }
