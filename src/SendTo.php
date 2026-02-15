@@ -169,7 +169,166 @@ class SendTo
         return $this->publisher->publish($post, 'facebook', $publishOptions);
     }
 
-    // ── Generic ──────────────────────────────────────────────────────────
+    // ── LinkedIn ─────────────────────────────────────────────────────────
+
+    /**
+     * Publish a message to LinkedIn.
+     *
+     * @param string     $message The post text (max 3000 characters).
+     * @param array|null $media   Optional media: ['path' => ..., 'mime_type' => ...].
+     * @param array      $options Additional platform-specific options.
+     */
+    public function linkedin(string $message, ?array $media = null, array $options = []): PublishResult
+    {
+        $mediaCollection = $this->buildMediaCollection($media);
+
+        $post = new Post(
+            title: '',
+            body: $message,
+            media: $mediaCollection,
+        );
+
+        return $this->publisher->publish($post, 'linkedin', $options);
+    }
+
+    // ── Other Platforms ──────────────────────────────────────────────────
+
+    /**
+     * Publish a message to Reddit.
+     *
+     * @param string $message The post text.
+     * @param array  $options Additional platform-specific options (e.g. 'subreddit', 'title').
+     */
+    public function reddit(string $message, array $options = []): PublishResult
+    {
+        $post = new Post(
+            title: $options['title'] ?? '',
+            body: $message,
+            url: $options['url'] ?? null,
+        );
+
+        return $this->publisher->publish($post, 'reddit', $options);
+    }
+
+    /**
+     * Publish a message to Discord.
+     *
+     * @param string     $message The message text.
+     * @param array|null $media   Optional media: ['path' => ..., 'mime_type' => ...].
+     * @param array      $options Additional platform-specific options.
+     */
+    public function discord(string $message, ?array $media = null, array $options = []): PublishResult
+    {
+        $mediaCollection = $this->buildMediaCollection($media);
+
+        $post = new Post(
+            title: '',
+            body: $message,
+            media: $mediaCollection,
+        );
+
+        return $this->publisher->publish($post, 'discord', $options);
+    }
+
+    /**
+     * Publish a message to Slack.
+     *
+     * @param string $message The message text.
+     * @param array  $options Additional platform-specific options.
+     */
+    public function slack(string $message, array $options = []): PublishResult
+    {
+        $post = new Post(
+            title: '',
+            body: $message,
+        );
+
+        return $this->publisher->publish($post, 'slack', $options);
+    }
+
+    /**
+     * Publish content to Instagram.
+     *
+     * @param string     $message The caption text.
+     * @param array|null $media   Media: ['path' => ..., 'mime_type' => ...] (required for Instagram).
+     * @param array      $options Additional platform-specific options.
+     */
+    public function instagram(string $message, ?array $media = null, array $options = []): PublishResult
+    {
+        $mediaCollection = $this->buildMediaCollection($media);
+
+        $post = new Post(
+            title: '',
+            body: $message,
+            media: $mediaCollection,
+        );
+
+        return $this->publisher->publish($post, 'instagram', $options);
+    }
+
+    /**
+     * Publish a pin to Pinterest.
+     *
+     * @param string $message The pin description.
+     * @param array  $data    Pin data: ['image' => '...', 'link' => '...', 'title' => '...'].
+     * @param array  $options Additional platform-specific options.
+     */
+    public function pinterest(string $message, array $data = [], array $options = []): PublishResult
+    {
+        $media = null;
+        if (isset($data['image'])) {
+            $media = new MediaCollection([
+                new Media($data['image'], 'image/jpeg'),
+            ]);
+        }
+
+        $post = new Post(
+            title: $data['title'] ?? '',
+            body: $message,
+            url: $data['link'] ?? null,
+            media: $media,
+        );
+
+        return $this->publisher->publish($post, 'pinterest', $options);
+    }
+
+    /**
+     * Publish a message to WhatsApp.
+     *
+     * @param string $message The message text.
+     * @param array  $options Additional platform-specific options (e.g. 'to' for recipient).
+     */
+    public function whatsapp(string $message, array $options = []): PublishResult
+    {
+        $post = new Post(
+            title: '',
+            body: $message,
+        );
+
+        return $this->publisher->publish($post, 'whatsapp', $options);
+    }
+
+    /**
+     * Publish a post to Tumblr.
+     *
+     * @param string     $message The post body.
+     * @param array|null $media   Optional media: ['path' => ..., 'mime_type' => ...].
+     * @param array      $options Additional platform-specific options.
+     */
+    public function tumblr(string $message, ?array $media = null, array $options = []): PublishResult
+    {
+        $mediaCollection = $this->buildMediaCollection($media);
+
+        $post = new Post(
+            title: $options['title'] ?? '',
+            body: $message,
+            media: $mediaCollection,
+        );
+
+        return $this->publisher->publish($post, 'tumblr', $options);
+    }
+
+    // ── Publish Directly ─────────────────────────────────────────────────
 
     /**
      * Publish a Post directly to a specific platform.

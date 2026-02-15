@@ -155,6 +155,9 @@ class OwlstackServiceProvider extends ServiceProvider
             if ($config->hasPlatform('tumblr')) {
                 $registry->register($app->make(\Owlstack\Core\Platforms\Tumblr\TumblrPlatform::class));
             }
+            if ($config->hasPlatform('linkedin')) {
+                $registry->register($app->make(\Owlstack\Core\Platforms\LinkedIn\LinkedInPlatform::class));
+            }
 
             return $registry;
         });
@@ -242,6 +245,14 @@ class OwlstackServiceProvider extends ServiceProvider
                 formatter: $app->make(\Owlstack\Core\Platforms\Tumblr\TumblrFormatter::class),
             );
         });
+        $this->app->singleton(\Owlstack\Core\Platforms\LinkedIn\LinkedInPlatform::class, function ($app) {
+            $config = $app->make(OwlstackConfig::class);
+            return new \Owlstack\Core\Platforms\LinkedIn\LinkedInPlatform(
+                credentials: $config->credentials('linkedin'),
+                httpClient: $app->make(HttpClientInterface::class),
+                formatter: $app->make(\Owlstack\Core\Platforms\LinkedIn\LinkedInFormatter::class),
+            );
+        });
     }
 
     private function registerPublisher(): void
@@ -289,6 +300,7 @@ class OwlstackServiceProvider extends ServiceProvider
             'pinterest' => ['access_token', 'board_id'],
             'whatsapp' => ['access_token', 'phone_number_id'],
             'tumblr' => ['access_token', 'blog_identifier'],
+            'linkedin' => ['access_token'],
             default => [],
         };
 

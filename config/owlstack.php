@@ -77,6 +77,12 @@ return [
             'blog_identifier' => env('TUMBLR_BLOG_IDENTIFIER', ''),
         ],
 
+        'linkedin' => [
+            'access_token' => env('LINKEDIN_ACCESS_TOKEN', ''),
+            'person_id' => env('LINKEDIN_PERSON_ID', ''),
+            'organization_id' => env('LINKEDIN_ORGANIZATION_ID', ''),
+        ],
+
     ],
 
     /*
