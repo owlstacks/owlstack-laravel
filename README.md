@@ -1,10 +1,31 @@
+<p align="center">
+  <a href="https://owlstack.dev">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/owlstacks/owlstack-docs/refs/heads/main/static/img/logo-light-transparent.png">
+      <img src="https://raw.githubusercontent.com/owlstacks/owlstack-docs/refs/heads/main/static/img/logo-dark-transparent.png" alt="Owlstack" height="200px">
+    </picture>
+  </a>
+</p>
+
+<p align="center">
+  <strong>Laravel integration for social media publishing</strong>
+</p>
+
+<p align="center">
+  <a href="https://github.com/alihesari/owlstack-laravel/actions/workflows/tests.yml"><img src="https://img.shields.io/github/actions/workflow/status/alihesari/owlstack-laravel/tests.yml?branch=main&style=flat-square&label=tests" alt="Tests"></a>
+  <a href="https://packagist.org/packages/owlstack/owlstack-laravel"><img src="https://img.shields.io/packagist/v/owlstack/owlstack-laravel.svg?style=flat-square" alt="Latest Version"></a>
+  <a href="https://packagist.org/packages/owlstack/owlstack-laravel"><img src="https://img.shields.io/packagist/dt/owlstack/owlstack-laravel.svg?style=flat-square" alt="Total Downloads"></a>
+  <a href="https://packagist.org/packages/owlstack/owlstack-laravel"><img src="https://img.shields.io/packagist/php-v/owlstack/owlstack-laravel.svg?style=flat-square" alt="PHP Version"></a>
+  <a href="https://packagist.org/packages/owlstack/owlstack-laravel"><img src="https://img.shields.io/badge/laravel-10.x%20|%2011.x%20|%2012.x-FF2D20?style=flat-square&logo=laravel&logoColor=white" alt="Laravel Version"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/packagist/l/owlstack/owlstack-laravel.svg?style=flat-square" alt="License"></a>
+  <a href="https://github.com/alihesari/owlstack-laravel"><img src="https://img.shields.io/github/stars/alihesari/owlstack-laravel?style=flat-square" alt="GitHub Stars"></a>
+</p>
+
+---
+
 # Owlstack for Laravel
 
-[![Tests](https://github.com/alihesari/owlstack-laravel/actions/workflows/tests.yml/badge.svg)](https://github.com/alihesari/owlstack-laravel/actions/workflows/tests.yml)
-[![Latest Stable Version](https://poser.pugx.org/owlstack/owlstack-laravel/v)](https://packagist.org/packages/owlstack/owlstack-laravel)
-[![License](https://poser.pugx.org/owlstack/owlstack-laravel/license)](https://packagist.org/packages/owlstack/owlstack-laravel)
-
-Laravel integration for [Owlstack Core](https://github.com/alihesari/owlstack-core) — publish content to Telegram, X (Twitter), Facebook, LinkedIn, Instagram, Discord, Slack, Reddit, Pinterest, WhatsApp, and Tumblr from your Laravel application.
+Laravel integration for [Owlstack Core](https://github.com/owlstacks/owlstack-core) — publish content to **11 social media platforms** (Telegram, X/Twitter, Facebook, LinkedIn, Instagram, Discord, Slack, Reddit, Pinterest, WhatsApp, and Tumblr) from your Laravel application.
 
 > **Note:** This package was previously `alihesari/larasap`. It has been rewritten from scratch to use `owlstack/owlstack-core` as its engine.
 
