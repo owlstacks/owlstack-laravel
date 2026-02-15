@@ -1,6 +1,10 @@
 # Owlstack for Laravel
 
-Laravel integration for [Owlstack Core](https://github.com/alihesari/owlstack-core) — publish content to Telegram, X (Twitter), and Facebook from your Laravel application.
+[![Tests](https://github.com/alihesari/owlstack-laravel/actions/workflows/tests.yml/badge.svg)](https://github.com/alihesari/owlstack-laravel/actions/workflows/tests.yml)
+[![Latest Stable Version](https://poser.pugx.org/owlstack/owlstack-laravel/v)](https://packagist.org/packages/owlstack/owlstack-laravel)
+[![License](https://poser.pugx.org/owlstack/owlstack-laravel/license)](https://packagist.org/packages/owlstack/owlstack-laravel)
+
+Laravel integration for [Owlstack Core](https://github.com/alihesari/owlstack-core) — publish content to Telegram, X (Twitter), Facebook, LinkedIn, Instagram, Discord, Slack, Reddit, Pinterest, WhatsApp, and Tumblr from your Laravel application.
 
 > **Note:** This package was previously `alihesari/larasap`. It has been rewritten from scratch to use `owlstack/owlstack-core` as its engine.
 
@@ -46,6 +50,42 @@ FACEBOOK_PAGE_ACCESS_TOKEN=your-page-token
 FACEBOOK_PAGE_ID=your-page-id
 FACEBOOK_GRAPH_VERSION=v21.0
 
+# LinkedIn
+LINKEDIN_ACCESS_TOKEN=your-access-token
+LINKEDIN_PERSON_ID=your-person-id          # For personal posts
+LINKEDIN_ORGANIZATION_ID=                   # For company page posts
+
+# Reddit
+REDDIT_CLIENT_ID=your-client-id
+REDDIT_CLIENT_SECRET=your-client-secret
+REDDIT_ACCESS_TOKEN=your-access-token
+REDDIT_USERNAME=your-username
+
+# Discord
+DISCORD_BOT_TOKEN=your-bot-token
+DISCORD_CHANNEL_ID=your-channel-id
+DISCORD_WEBHOOK_URL=                        # Optional: use webhook instead
+
+# Slack
+SLACK_BOT_TOKEN=xoxb-your-token
+SLACK_CHANNEL=#your-channel
+
+# Instagram
+INSTAGRAM_ACCESS_TOKEN=your-access-token
+INSTAGRAM_ACCOUNT_ID=your-account-id
+
+# Pinterest
+PINTEREST_ACCESS_TOKEN=your-access-token
+PINTEREST_BOARD_ID=your-board-id
+
+# WhatsApp
+WHATSAPP_ACCESS_TOKEN=your-access-token
+WHATSAPP_PHONE_NUMBER_ID=your-phone-number-id
+
+# Tumblr
+TUMBLR_ACCESS_TOKEN=your-access-token
+TUMBLR_BLOG_IDENTIFIER=your-blog.tumblr.com
+
 # Proxy (optional — for restricted networks)
 OWLSTACK_PROXY_HOST=localhost
 OWLSTACK_PROXY_PORT=9050
@@ -76,6 +116,40 @@ class PostController extends Controller
         $result = $sendTo->facebook('Check this out!', 'link', [
             'link' => 'https://example.com',
         ]);
+
+        // LinkedIn
+        $result = $sendTo->linkedin('Post to LinkedIn!');
+
+        // Discord
+        $result = $sendTo->discord('Hello Discord!');
+
+        // Slack
+        $result = $sendTo->slack('Hello Slack!');
+
+        // Reddit
+        $result = $sendTo->reddit('Post body', [
+            'title' => 'Post Title',
+            'subreddit' => 'test',
+        ]);
+
+        // Instagram
+        $result = $sendTo->instagram('Caption', [
+            'path' => '/path/to/image.jpg',
+            'mime_type' => 'image/jpeg',
+        ]);
+
+        // Pinterest
+        $result = $sendTo->pinterest('Pin description', [
+            'image' => '/path/to/image.jpg',
+            'link' => 'https://example.com',
+            'title' => 'Pin Title',
+        ]);
+
+        // WhatsApp
+        $result = $sendTo->whatsapp('Hello!', ['to' => '+1234567890']);
+
+        // Tumblr
+        $result = $sendTo->tumblr('Blog post content');
     }
 }
 ```
@@ -87,6 +161,7 @@ use Owlstack\Laravel\Facades\Owlstack;
 
 Owlstack::telegram('Hello from the facade!');
 Owlstack::twitter('Tweet from the facade!');
+Owlstack::linkedin('Post from the facade!');
 ```
 
 ### Return Value
@@ -225,6 +300,85 @@ $sendTo->facebook('Watch this!', 'video', [
 ]);
 ```
 
+### LinkedIn Features
+
+```php
+// Text post
+$sendTo->linkedin('Hello LinkedIn!');
+
+// Post with image
+$sendTo->linkedin('Check out this image!', [
+    'path' => '/path/to/image.jpg',
+    'mime_type' => 'image/jpeg',
+]);
+```
+
+### Discord Features
+
+```php
+// Text message
+$sendTo->discord('Hello Discord!');
+
+// Message with media
+$sendTo->discord('Check this out!', [
+    'path' => '/path/to/image.jpg',
+    'mime_type' => 'image/jpeg',
+]);
+```
+
+### Slack Features
+
+```php
+$sendTo->slack('Hello Slack!');
+```
+
+### Reddit Features
+
+```php
+$sendTo->reddit('Post body text', [
+    'title' => 'Post Title',
+    'subreddit' => 'your_subreddit',
+]);
+```
+
+### Instagram Features
+
+```php
+$sendTo->instagram('Beautiful photo!', [
+    'path' => '/path/to/image.jpg',
+    'mime_type' => 'image/jpeg',
+]);
+```
+
+### Pinterest Features
+
+```php
+$sendTo->pinterest('Pin description', [
+    'image' => '/path/to/image.jpg',
+    'link' => 'https://example.com',
+    'title' => 'Pin Title',
+]);
+```
+
+### WhatsApp Features
+
+```php
+$sendTo->whatsapp('Hello!', ['to' => '+1234567890']);
+```
+
+### Tumblr Features
+
+```php
+// Text post
+$sendTo->tumblr('Blog post content');
+
+// Post with media
+$sendTo->tumblr('Photo post', [
+    'path' => '/path/to/image.jpg',
+    'mime_type' => 'image/jpeg',
+]);
+```
+
 ### Using Post Objects Directly
 
 For full control, create `Owlstack\Core\Content\Post` objects:
@@ -285,7 +439,7 @@ This package is a thin wrapper around `owlstack/owlstack-core`. The architecture
 Your Laravel App
     └── Owlstack\Laravel\SendTo (or Facade)
         └── Owlstack\Core\Publishing\Publisher
-            └── Owlstack\Core\Platforms\{Telegram,Twitter,Facebook}Platform
+            └── Owlstack\Core\Platforms\{Telegram,Twitter,Facebook,LinkedIn,...}Platform
                 └── Owlstack\Core\Http\HttpClient (cURL)
 ```
 
@@ -301,9 +455,9 @@ The service provider wires everything together:
 
 ```bash
 composer test
-# or
-./vendor/bin/phpunit
 ```
+
+Or run PHPUnit directly:
 
 In your own tests, mock `HttpClientInterface` on the container:
 
