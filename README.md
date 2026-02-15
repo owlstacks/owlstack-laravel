@@ -12,13 +12,13 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/alihesari/owlstack-laravel/actions/workflows/tests.yml"><img src="https://img.shields.io/github/actions/workflow/status/alihesari/owlstack-laravel/tests.yml?branch=main&style=flat-square&label=tests" alt="Tests"></a>
+  <a href="https://github.com/owlstacks/owlstack-laravel/actions/workflows/tests.yml"><img src="https://img.shields.io/github/actions/workflow/status/owlstacks/owlstack-laravel/tests.yml?branch=master&style=flat-square&label=tests" alt="Tests"></a>
   <a href="https://packagist.org/packages/owlstack/owlstack-laravel"><img src="https://img.shields.io/packagist/v/owlstack/owlstack-laravel.svg?style=flat-square" alt="Latest Version"></a>
   <a href="https://packagist.org/packages/owlstack/owlstack-laravel"><img src="https://img.shields.io/packagist/dt/owlstack/owlstack-laravel.svg?style=flat-square" alt="Total Downloads"></a>
   <a href="https://packagist.org/packages/owlstack/owlstack-laravel"><img src="https://img.shields.io/packagist/php-v/owlstack/owlstack-laravel.svg?style=flat-square" alt="PHP Version"></a>
   <a href="https://packagist.org/packages/owlstack/owlstack-laravel"><img src="https://img.shields.io/badge/laravel-10.x%20|%2011.x%20|%2012.x-FF2D20?style=flat-square&logo=laravel&logoColor=white" alt="Laravel Version"></a>
   <a href="LICENSE"><img src="https://img.shields.io/packagist/l/owlstack/owlstack-laravel.svg?style=flat-square" alt="License"></a>
-  <a href="https://github.com/alihesari/owlstack-laravel"><img src="https://img.shields.io/github/stars/alihesari/owlstack-laravel?style=flat-square" alt="GitHub Stars"></a>
+  <a href="https://github.com/owlstacks/owlstack-laravel"><img src="https://img.shields.io/github/stars/owlstacks/owlstack-laravel?style=flat-square" alt="GitHub Stars"></a>
 </p>
 
 ---
