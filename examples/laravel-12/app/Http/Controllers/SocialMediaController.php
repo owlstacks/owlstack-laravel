@@ -57,6 +57,21 @@ class SocialMediaController extends Controller
     }
 
     /**
+     * Test LinkedIn posting.
+     */
+    public function testLinkedIn(SendTo $sendTo)
+    {
+        $result = $sendTo->linkedin('Test post from Laravel 12');
+
+        return response()->json([
+            'success' => $result->success,
+            'platform' => $result->platformName,
+            'external_id' => $result->externalId,
+            'error' => $result->error,
+        ]);
+    }
+
+    /**
      * Test all platforms at once.
      */
     public function testAll(SendTo $sendTo)

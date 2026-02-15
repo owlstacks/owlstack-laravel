@@ -28,6 +28,9 @@ Route::get('/test-x', [SocialMediaController::class, 'testX'])
 Route::get('/test-facebook', [SocialMediaController::class, 'testFacebook'])
     ->name('social.test.facebook');
 
+Route::get('/test-linkedin', [SocialMediaController::class, 'testLinkedIn'])
+    ->name('social.test.linkedin');
+
 // Test all platforms
 Route::get('/test-all-social', [SocialMediaController::class, 'testAll'])
     ->name('social.test.all');
