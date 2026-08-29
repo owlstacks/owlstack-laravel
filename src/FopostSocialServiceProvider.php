@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-namespace Owlstack\Laravel;
+namespace Fopost\Social\Laravel;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\ServiceProvider;
-use Owlstack\Core\Config\PlatformCredentials;
-use Owlstack\Core\Config\OwlstackConfig;
-use Owlstack\Core\Formatting\CharacterTruncator;
-use Owlstack\Core\Formatting\HashtagExtractor;
-use Owlstack\Core\Http\Contracts\HttpClientInterface;
-use Owlstack\Core\Http\HttpClient;
-use Owlstack\Core\Platforms\Facebook\FacebookFormatter;
-use Owlstack\Core\Platforms\Facebook\FacebookPlatform;
-use Owlstack\Core\Platforms\PlatformRegistry;
-use Owlstack\Core\Platforms\Telegram\TelegramFormatter;
-use Owlstack\Core\Platforms\Telegram\TelegramPlatform;
-use Owlstack\Core\Platforms\Twitter\TwitterFormatter;
-use Owlstack\Core\Platforms\Twitter\TwitterPlatform;
-use Owlstack\Core\Publishing\Publisher;
-use Owlstack\Laravel\Events\LaravelEventDispatcher;
+use Fopost\Social\Config\PlatformCredentials;
+use Fopost\Social\Config\FopostConfig;
+use Fopost\Social\Formatting\CharacterTruncator;
+use Fopost\Social\Formatting\HashtagExtractor;
+use Fopost\Social\Http\Contracts\HttpClientInterface;
+use Fopost\Social\Http\HttpClient;
+use Fopost\Social\Platforms\Facebook\FacebookFormatter;
+use Fopost\Social\Platforms\Facebook\FacebookPlatform;
+use Fopost\Social\Platforms\PlatformRegistry;
+use Fopost\Social\Platforms\Telegram\TelegramFormatter;
+use Fopost\Social\Platforms\Telegram\TelegramPlatform;
+use Fopost\Social\Platforms\Twitter\TwitterFormatter;
+use Fopost\Social\Platforms\Twitter\TwitterPlatform;
+use Fopost\Social\Publishing\Publisher;
+use Fopost\Social\Laravel\Events\LaravelEventDispatcher;
 
-class OwlstackServiceProvider extends ServiceProvider
+class FopostSocialServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
@@ -30,8 +30,8 @@ class OwlstackServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../config/owlstack.php',
-            'owlstack',
+            __DIR__ . '/../config/fopost-social.php',
+            'fopost-social',
         );
 
         $this->registerConfig();
@@ -49,8 +49,8 @@ class OwlstackServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../config/owlstack.php' => config_path('owlstack.php'),
-            ], 'owlstack-config');
+                __DIR__ . '/../config/fopost-social.php' => config_path('fopost.php'),
+            ], 'fopost-config');
         }
     }
 
@@ -58,8 +58,8 @@ class OwlstackServiceProvider extends ServiceProvider
 
     private function registerConfig(): void
     {
-        $this->app->singleton(OwlstackConfig::class, function ($app) {
-            $platforms = $app['config']->get('owlstack.platforms', []);
+        $this->app->singleton(FopostConfig::class, function ($app) {
+            $platforms = $app['config']->get('fopost.platforms', []);
 
             // Filter out platforms with empty credentials
             $configured = [];
@@ -69,10 +69,10 @@ class OwlstackServiceProvider extends ServiceProvider
                 }
             }
 
-            return new OwlstackConfig(
+            return new FopostConfig(
                 platforms: $configured,
                 options: [
-                    'proxy' => $app['config']->get('owlstack.proxy', []),
+                    'proxy' => $app['config']->get('fopost.proxy', []),
                 ],
             );
         });
@@ -81,7 +81,7 @@ class OwlstackServiceProvider extends ServiceProvider
     private function registerHttpClient(): void
     {
         $this->app->singleton(HttpClientInterface::class, function ($app) {
-            $proxyConfig = $app['config']->get('owlstack.proxy', []);
+            $proxyConfig = $app['config']->get('fopost.proxy', []);
 
             $proxy = null;
             if (!empty($proxyConfig['hostname']) && !empty($proxyConfig['port'])) {
@@ -123,7 +123,7 @@ class OwlstackServiceProvider extends ServiceProvider
     {
         $this->app->singleton(PlatformRegistry::class, function ($app) {
             $registry = new PlatformRegistry();
-            $config = $app->make(OwlstackConfig::class);
+            $config = $app->make(FopostConfig::class);
 
             if ($config->hasPlatform('telegram')) {
                 $registry->register($app->make(TelegramPlatform::class));
@@ -135,28 +135,28 @@ class OwlstackServiceProvider extends ServiceProvider
                 $registry->register($app->make(FacebookPlatform::class));
             }
             if ($config->hasPlatform('reddit')) {
-                $registry->register($app->make(\Owlstack\Core\Platforms\Reddit\RedditPlatform::class));
+                $registry->register($app->make(\Fopost\Social\Platforms\Reddit\RedditPlatform::class));
             }
             if ($config->hasPlatform('discord')) {
-                $registry->register($app->make(\Owlstack\Core\Platforms\Discord\DiscordPlatform::class));
+                $registry->register($app->make(\Fopost\Social\Platforms\Discord\DiscordPlatform::class));
             }
             if ($config->hasPlatform('slack')) {
-                $registry->register($app->make(\Owlstack\Core\Platforms\Slack\SlackPlatform::class));
+                $registry->register($app->make(\Fopost\Social\Platforms\Slack\SlackPlatform::class));
             }
             if ($config->hasPlatform('instagram')) {
-                $registry->register($app->make(\Owlstack\Core\Platforms\Instagram\InstagramPlatform::class));
+                $registry->register($app->make(\Fopost\Social\Platforms\Instagram\InstagramPlatform::class));
             }
             if ($config->hasPlatform('pinterest')) {
-                $registry->register($app->make(\Owlstack\Core\Platforms\Pinterest\PinterestPlatform::class));
+                $registry->register($app->make(\Fopost\Social\Platforms\Pinterest\PinterestPlatform::class));
             }
             if ($config->hasPlatform('whatsapp')) {
-                $registry->register($app->make(\Owlstack\Core\Platforms\WhatsApp\WhatsAppPlatform::class));
+                $registry->register($app->make(\Fopost\Social\Platforms\WhatsApp\WhatsAppPlatform::class));
             }
             if ($config->hasPlatform('tumblr')) {
-                $registry->register($app->make(\Owlstack\Core\Platforms\Tumblr\TumblrPlatform::class));
+                $registry->register($app->make(\Fopost\Social\Platforms\Tumblr\TumblrPlatform::class));
             }
             if ($config->hasPlatform('linkedin')) {
-                $registry->register($app->make(\Owlstack\Core\Platforms\LinkedIn\LinkedInPlatform::class));
+                $registry->register($app->make(\Fopost\Social\Platforms\LinkedIn\LinkedInPlatform::class));
             }
 
             return $registry;
@@ -164,7 +164,7 @@ class OwlstackServiceProvider extends ServiceProvider
 
         // Register individual platform classes
         $this->app->singleton(TelegramPlatform::class, function ($app) {
-            $config = $app->make(OwlstackConfig::class);
+            $config = $app->make(FopostConfig::class);
             return new TelegramPlatform(
                 credentials: $config->credentials('telegram'),
                 httpClient: $app->make(HttpClientInterface::class),
@@ -172,7 +172,7 @@ class OwlstackServiceProvider extends ServiceProvider
             );
         });
         $this->app->singleton(TwitterPlatform::class, function ($app) {
-            $config = $app->make(OwlstackConfig::class);
+            $config = $app->make(FopostConfig::class);
             return new TwitterPlatform(
                 credentials: $config->credentials('twitter'),
                 httpClient: $app->make(HttpClientInterface::class),
@@ -180,7 +180,7 @@ class OwlstackServiceProvider extends ServiceProvider
             );
         });
         $this->app->singleton(FacebookPlatform::class, function ($app) {
-            $config = $app->make(OwlstackConfig::class);
+            $config = $app->make(FopostConfig::class);
             $graphVersion = $config->credentials('facebook')?->get('default_graph_version', 'v21.0') ?? 'v21.0';
             return new FacebookPlatform(
                 credentials: $config->credentials('facebook'),
@@ -189,68 +189,68 @@ class OwlstackServiceProvider extends ServiceProvider
                 graphVersion: $graphVersion,
             );
         });
-        $this->app->singleton(\Owlstack\Core\Platforms\Reddit\RedditPlatform::class, function ($app) {
-            $config = $app->make(OwlstackConfig::class);
-            return new \Owlstack\Core\Platforms\Reddit\RedditPlatform(
+        $this->app->singleton(\Fopost\Social\Platforms\Reddit\RedditPlatform::class, function ($app) {
+            $config = $app->make(FopostConfig::class);
+            return new \Fopost\Social\Platforms\Reddit\RedditPlatform(
                 credentials: $config->credentials('reddit'),
                 httpClient: $app->make(HttpClientInterface::class),
-                formatter: $app->make(\Owlstack\Core\Platforms\Reddit\RedditFormatter::class),
+                formatter: $app->make(\Fopost\Social\Platforms\Reddit\RedditFormatter::class),
             );
         });
-        $this->app->singleton(\Owlstack\Core\Platforms\Discord\DiscordPlatform::class, function ($app) {
-            $config = $app->make(OwlstackConfig::class);
-            return new \Owlstack\Core\Platforms\Discord\DiscordPlatform(
+        $this->app->singleton(\Fopost\Social\Platforms\Discord\DiscordPlatform::class, function ($app) {
+            $config = $app->make(FopostConfig::class);
+            return new \Fopost\Social\Platforms\Discord\DiscordPlatform(
                 credentials: $config->credentials('discord'),
                 httpClient: $app->make(HttpClientInterface::class),
-                formatter: $app->make(\Owlstack\Core\Platforms\Discord\DiscordFormatter::class),
+                formatter: $app->make(\Fopost\Social\Platforms\Discord\DiscordFormatter::class),
             );
         });
-        $this->app->singleton(\Owlstack\Core\Platforms\Slack\SlackPlatform::class, function ($app) {
-            $config = $app->make(OwlstackConfig::class);
-            return new \Owlstack\Core\Platforms\Slack\SlackPlatform(
+        $this->app->singleton(\Fopost\Social\Platforms\Slack\SlackPlatform::class, function ($app) {
+            $config = $app->make(FopostConfig::class);
+            return new \Fopost\Social\Platforms\Slack\SlackPlatform(
                 credentials: $config->credentials('slack'),
                 httpClient: $app->make(HttpClientInterface::class),
-                formatter: $app->make(\Owlstack\Core\Platforms\Slack\SlackFormatter::class),
+                formatter: $app->make(\Fopost\Social\Platforms\Slack\SlackFormatter::class),
             );
         });
-        $this->app->singleton(\Owlstack\Core\Platforms\Instagram\InstagramPlatform::class, function ($app) {
-            $config = $app->make(OwlstackConfig::class);
-            return new \Owlstack\Core\Platforms\Instagram\InstagramPlatform(
+        $this->app->singleton(\Fopost\Social\Platforms\Instagram\InstagramPlatform::class, function ($app) {
+            $config = $app->make(FopostConfig::class);
+            return new \Fopost\Social\Platforms\Instagram\InstagramPlatform(
                 credentials: $config->credentials('instagram'),
                 httpClient: $app->make(HttpClientInterface::class),
-                formatter: $app->make(\Owlstack\Core\Platforms\Instagram\InstagramFormatter::class),
+                formatter: $app->make(\Fopost\Social\Platforms\Instagram\InstagramFormatter::class),
             );
         });
-        $this->app->singleton(\Owlstack\Core\Platforms\Pinterest\PinterestPlatform::class, function ($app) {
-            $config = $app->make(OwlstackConfig::class);
-            return new \Owlstack\Core\Platforms\Pinterest\PinterestPlatform(
+        $this->app->singleton(\Fopost\Social\Platforms\Pinterest\PinterestPlatform::class, function ($app) {
+            $config = $app->make(FopostConfig::class);
+            return new \Fopost\Social\Platforms\Pinterest\PinterestPlatform(
                 credentials: $config->credentials('pinterest'),
                 httpClient: $app->make(HttpClientInterface::class),
-                formatter: $app->make(\Owlstack\Core\Platforms\Pinterest\PinterestFormatter::class),
+                formatter: $app->make(\Fopost\Social\Platforms\Pinterest\PinterestFormatter::class),
             );
         });
-        $this->app->singleton(\Owlstack\Core\Platforms\WhatsApp\WhatsAppPlatform::class, function ($app) {
-            $config = $app->make(OwlstackConfig::class);
-            return new \Owlstack\Core\Platforms\WhatsApp\WhatsAppPlatform(
+        $this->app->singleton(\Fopost\Social\Platforms\WhatsApp\WhatsAppPlatform::class, function ($app) {
+            $config = $app->make(FopostConfig::class);
+            return new \Fopost\Social\Platforms\WhatsApp\WhatsAppPlatform(
                 credentials: $config->credentials('whatsapp'),
                 httpClient: $app->make(HttpClientInterface::class),
-                formatter: $app->make(\Owlstack\Core\Platforms\WhatsApp\WhatsAppFormatter::class),
+                formatter: $app->make(\Fopost\Social\Platforms\WhatsApp\WhatsAppFormatter::class),
             );
         });
-        $this->app->singleton(\Owlstack\Core\Platforms\Tumblr\TumblrPlatform::class, function ($app) {
-            $config = $app->make(OwlstackConfig::class);
-            return new \Owlstack\Core\Platforms\Tumblr\TumblrPlatform(
+        $this->app->singleton(\Fopost\Social\Platforms\Tumblr\TumblrPlatform::class, function ($app) {
+            $config = $app->make(FopostConfig::class);
+            return new \Fopost\Social\Platforms\Tumblr\TumblrPlatform(
                 credentials: $config->credentials('tumblr'),
                 httpClient: $app->make(HttpClientInterface::class),
-                formatter: $app->make(\Owlstack\Core\Platforms\Tumblr\TumblrFormatter::class),
+                formatter: $app->make(\Fopost\Social\Platforms\Tumblr\TumblrFormatter::class),
             );
         });
-        $this->app->singleton(\Owlstack\Core\Platforms\LinkedIn\LinkedInPlatform::class, function ($app) {
-            $config = $app->make(OwlstackConfig::class);
-            return new \Owlstack\Core\Platforms\LinkedIn\LinkedInPlatform(
+        $this->app->singleton(\Fopost\Social\Platforms\LinkedIn\LinkedInPlatform::class, function ($app) {
+            $config = $app->make(FopostConfig::class);
+            return new \Fopost\Social\Platforms\LinkedIn\LinkedInPlatform(
                 credentials: $config->credentials('linkedin'),
                 httpClient: $app->make(HttpClientInterface::class),
-                formatter: $app->make(\Owlstack\Core\Platforms\LinkedIn\LinkedInFormatter::class),
+                formatter: $app->make(\Fopost\Social\Platforms\LinkedIn\LinkedInFormatter::class),
             );
         });
     }
@@ -271,15 +271,15 @@ class OwlstackServiceProvider extends ServiceProvider
 
     private function registerSendTo(): void
     {
-        $this->app->singleton('owlstack', function ($app) {
+        $this->app->singleton('fopost-social', function ($app) {
             return new SendTo(
                 publisher: $app->make(Publisher::class),
-                config: $app->make(OwlstackConfig::class),
+                config: $app->make(FopostConfig::class),
                 registry: $app->make(PlatformRegistry::class),
             );
         });
 
-        $this->app->alias('owlstack', SendTo::class);
+        $this->app->alias('fopost-social', SendTo::class);
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────

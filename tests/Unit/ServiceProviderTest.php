@@ -2,39 +2,39 @@
 
 declare(strict_types=1);
 
-namespace Owlstack\Laravel\Tests\Unit;
+namespace Fopost\Social\Laravel\Tests\Unit;
 
-use Owlstack\Core\Config\OwlstackConfig;
-use Owlstack\Core\Http\Contracts\HttpClientInterface;
-use Owlstack\Core\Platforms\PlatformRegistry;
-use Owlstack\Core\Platforms\Telegram\TelegramPlatform;
-use Owlstack\Core\Platforms\Twitter\TwitterPlatform;
-use Owlstack\Core\Platforms\Facebook\FacebookPlatform;
-use Owlstack\Core\Publishing\Publisher;
-use Owlstack\Laravel\Events\LaravelEventDispatcher;
-use Owlstack\Laravel\SendTo;
-use Owlstack\Laravel\OwlstackServiceProvider;
-use Owlstack\Laravel\Tests\TestCase;
+use Fopost\Social\Config\FopostConfig;
+use Fopost\Social\Http\Contracts\HttpClientInterface;
+use Fopost\Social\Platforms\PlatformRegistry;
+use Fopost\Social\Platforms\Telegram\TelegramPlatform;
+use Fopost\Social\Platforms\Twitter\TwitterPlatform;
+use Fopost\Social\Platforms\Facebook\FacebookPlatform;
+use Fopost\Social\Publishing\Publisher;
+use Fopost\Social\Laravel\Events\LaravelEventDispatcher;
+use Fopost\Social\Laravel\SendTo;
+use Fopost\Social\Laravel\FopostSocialServiceProvider;
+use Fopost\Social\Laravel\Tests\TestCase;
 
 class ServiceProviderTest extends TestCase
 {
     public function testServiceProviderIsRegistered(): void
     {
         $this->assertInstanceOf(
-            OwlstackServiceProvider::class,
-            $this->app->getProvider(OwlstackServiceProvider::class),
+            FopostSocialServiceProvider::class,
+            $this->app->getProvider(FopostSocialServiceProvider::class),
         );
     }
 
-    public function testOwlstackConfigIsBound(): void
+    public function testFopostConfigIsBound(): void
     {
-        $config = $this->app->make(OwlstackConfig::class);
-        $this->assertInstanceOf(OwlstackConfig::class, $config);
+        $config = $this->app->make(FopostConfig::class);
+        $this->assertInstanceOf(FopostConfig::class, $config);
     }
 
     public function testConfigHasAllPlatforms(): void
     {
-        $config = $this->app->make(OwlstackConfig::class);
+        $config = $this->app->make(FopostConfig::class);
 
         $this->assertTrue($config->hasPlatform('telegram'));
         $this->assertTrue($config->hasPlatform('twitter'));
@@ -44,7 +44,7 @@ class ServiceProviderTest extends TestCase
     public function testConfigFiltersPlatformsWithEmptyCredentials(): void
     {
         // Override twitter config with empty credentials
-        $this->app['config']->set('owlstack.platforms.twitter', [
+        $this->app['config']->set('fopost.platforms.twitter', [
             'consumer_key' => '',
             'consumer_secret' => '',
             'access_token' => '',
@@ -52,10 +52,10 @@ class ServiceProviderTest extends TestCase
         ]);
 
         // Re-register so the singleton is rebuilt
-        $this->app->forgetInstance(OwlstackConfig::class);
-        (new OwlstackServiceProvider($this->app))->register();
+        $this->app->forgetInstance(FopostConfig::class);
+        (new FopostSocialServiceProvider($this->app))->register();
 
-        $config = $this->app->make(OwlstackConfig::class);
+        $config = $this->app->make(FopostConfig::class);
         $this->assertFalse($config->hasPlatform('twitter'));
         $this->assertTrue($config->hasPlatform('telegram'));
     }
@@ -119,7 +119,7 @@ class ServiceProviderTest extends TestCase
 
     public function testSendToIsBound(): void
     {
-        $sendTo = $this->app->make('owlstack');
+        $sendTo = $this->app->make('fopost-social');
         $this->assertInstanceOf(SendTo::class, $sendTo);
     }
 
@@ -131,12 +131,12 @@ class ServiceProviderTest extends TestCase
 
     public function testConfigPublishing(): void
     {
-        $this->artisan('vendor:publish', ['--tag' => 'owlstack-config', '--force' => true]);
+        $this->artisan('vendor:publish', ['--tag' => 'fopost-config', '--force' => true]);
 
         // The config file should have been published
-        $this->assertFileExists(config_path('owlstack.php'));
+        $this->assertFileExists(config_path('fopost.php'));
 
         // Clean up
-        @unlink(config_path('owlstack.php'));
+        @unlink(config_path('fopost.php'));
     }
 }

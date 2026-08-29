@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Owlstack\Laravel;
+namespace Fopost\Social\Laravel;
 
-use Owlstack\Core\Config\OwlstackConfig;
-use Owlstack\Core\Content\Media;
-use Owlstack\Core\Content\MediaCollection;
-use Owlstack\Core\Content\Post;
-use Owlstack\Core\Platforms\PlatformRegistry;
-use Owlstack\Core\Platforms\Telegram\TelegramPlatform;
-use Owlstack\Core\Publishing\Publisher;
-use Owlstack\Core\Publishing\PublishResult;
+use Fopost\Social\Config\FopostConfig;
+use Fopost\Social\Content\Media;
+use Fopost\Social\Content\MediaCollection;
+use Fopost\Social\Content\Post;
+use Fopost\Social\Platforms\PlatformRegistry;
+use Fopost\Social\Platforms\Telegram\TelegramPlatform;
+use Fopost\Social\Publishing\Publisher;
+use Fopost\Social\Publishing\PublishResult;
 
 /**
  * High-level Laravel API for publishing content to social media platforms.
@@ -22,7 +22,7 @@ use Owlstack\Core\Publishing\PublishResult;
  *     }
  *
  * Usage via Facade:
- *     Owlstack::telegram('Hello world!');
+ *     FopostSocial::telegram('Hello world!');
  */
 class SendTo
 {
@@ -31,7 +31,7 @@ class SendTo
 
     public function __construct(
         private readonly Publisher $publisher,
-        private readonly OwlstackConfig $config,
+        private readonly FopostConfig $config,
         private readonly PlatformRegistry $registry,
     ) {
     }

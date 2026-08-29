@@ -1,6 +1,6 @@
-You are working on owlstack-laravel, a Laravel integration package for the Owlstack social media publishing platform.
+You are working on fopost-social-laravel, a Laravel integration package for the Fopost social media publishing platform.
 
-This is a thin wrapper around owlstack/owlstack-core. All platform logic, formatting, and HTTP transport live in the core package. Do not duplicate core behavior.
+This is a thin wrapper around fopost/social-core. All platform logic, formatting, and HTTP transport live in the core package. Do not duplicate core behavior.
 
 Key conventions:
 - PHP 8.1+ with declare(strict_types=1) in every file
@@ -10,11 +10,11 @@ Key conventions:
 - One class per file
 
 Architecture:
-- OwlstackServiceProvider registers core services into the Laravel container
+- FopostSocialServiceProvider registers core services into the Laravel container
 - SendTo is the high-level publishing API (telegram(), twitter(), facebook(), etc.)
-- Owlstack facade proxies to SendTo
+- Fopost facade proxies to SendTo
 - LaravelEventDispatcher bridges core events to Laravel's event system
-- Config in config/owlstack.php, populated from .env
+- Config in config/fopost-social.php, populated from .env
 - Supports Laravel 10.x, 11.x, 12.x
 
 Testing:
@@ -24,7 +24,7 @@ Testing:
 - Unit tests in tests/Unit/, feature tests in tests/Feature/
 
 Do not:
-- Duplicate platform logic from owlstack-core
+- Duplicate platform logic from fopost-social-core
 - Hardcode API URLs or credentials
 - Commit real API tokens
 - Use dd(), var_dump, or print_r in production code

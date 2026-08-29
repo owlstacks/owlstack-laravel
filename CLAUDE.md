@@ -1,28 +1,28 @@
 # CLAUDE.md
 
-This file provides guidance for Claude, Cursor, and other AI assistants working with the Owlstack Laravel codebase.
+This file provides guidance for Claude, Cursor, and other AI assistants working with the Fopost Laravel codebase.
 
 ## Project Overview
 
-**Owlstack Laravel** is the official Laravel integration for the Owlstack social media publishing platform. It wraps [Owlstack Core](https://github.com/owlstacks/owlstack-core) with Laravel-idiomatic services: a service provider, facade, config file, and event bridging.
+**Fopost Laravel** is the official Laravel integration for the Fopost social media publishing platform. It wraps [Fopost Core](https://github.com/fopost/social-core) with Laravel-idiomatic services: a service provider, facade, config file, and event bridging.
 
-- **Repository:** `owlstack/owlstack-laravel`
+- **Repository:** `fopost/social-laravel`
 - **Language:** PHP 8.1+
 - **Framework:** Laravel 10.x, 11.x, 12.x
-- **Core dependency:** `owlstack/owlstack-core` ^1.0
-- **Namespace:** `Owlstack\Laravel\`
+- **Core dependency:** `fopost/social-core` ^1.0
+- **Namespace:** `Fopost\Social\Laravel\`
 - **License:** MIT
 
-## Relationship to Owlstack Core
+## Relationship to Fopost Core
 
-This package is a **thin wrapper**. All platform logic, formatting, HTTP transport, and content models live in `owlstack-core`. This package provides:
+This package is a **thin wrapper**. All platform logic, formatting, HTTP transport, and content models live in `fopost-social-core`. This package provides:
 
 1. **Service Provider** — Wires core classes into Laravel's container
-2. **Facade** — Static access via `Owlstack::telegram(...)`
-3. **Configuration** — `config/owlstack.php` populated from `.env`
+2. **Facade** — Static access via `FopostSocial::telegram(...)`
+3. **Configuration** — `config/fopost-social.php` populated from `.env`
 4. **Event Bridge** — Routes core events through Laravel's event dispatcher
 
-**Rule:** If a change involves platform behavior, API communication, or content formatting, it belongs in `owlstack-core`. If it involves Laravel integration (DI, config, artisan, queues), it belongs here.
+**Rule:** If a change involves platform behavior, API communication, or content formatting, it belongs in `fopost-social-core`. If it involves Laravel integration (DI, config, artisan, queues), it belongs here.
 
 ## Directory Structure
 
@@ -31,12 +31,12 @@ src/
 ├── Events/
 │   └── LaravelEventDispatcher.php  # Bridges core events → Laravel events
 ├── Facades/
-│   └── Owlstack.php                # Facade for SendTo
-├── OwlstackServiceProvider.php     # Registers all services
+│   └── Fopost.php                # Facade for SendTo
+├── FopostSocialServiceProvider.php     # Registers all services
 └── SendTo.php                      # High-level publishing API
 
 config/
-└── owlstack.php                    # Publishable config (credentials, platforms)
+└── fopost.php                    # Publishable config (credentials, platforms)
 
 tests/
 ├── TestCase.php                    # Base test case (extends Orchestra Testbench)
@@ -66,11 +66,11 @@ examples/
 
 ## Service Container Bindings
 
-The `OwlstackServiceProvider` registers these bindings:
+The `FopostSocialServiceProvider` registers these bindings:
 
 | Binding | Resolves To | Lifetime |
 |---|---|---|
-| `OwlstackConfig` | Config built from `config/owlstack.php` | Singleton |
+| `FopostConfig` | Config built from `config/fopost-social.php` | Singleton |
 | `HttpClientInterface` | Core's cURL `HttpClient` (with optional proxy) | Singleton |
 | `HashtagExtractor` | Core's hashtag extraction utility | Singleton |
 | `CharacterTruncator` | Core's text truncation utility | Singleton |
@@ -79,7 +79,7 @@ The `OwlstackServiceProvider` registers these bindings:
 | `PlatformRegistry` | Registry of all active platforms | Singleton |
 | `EventDispatcherInterface` | `LaravelEventDispatcher` | Singleton |
 | `Publisher` | Core's `Publisher` with event dispatcher | Singleton |
-| `'owlstack'` / `SendTo` | `SendTo` instance | Singleton |
+| `'fopost-social'` / `SendTo` | `SendTo` instance | Singleton |
 
 ## Key Patterns
 
@@ -109,7 +109,7 @@ Event::listen(PostPublished::class, fn($e) => ...);
 ### Configuration Flow
 
 ```
-.env variables → config/owlstack.php → OwlstackConfig → Platform constructors
+.env variables → config/fopost-social.php → FopostConfig → Platform constructors
 ```
 
 Only platforms with valid credentials are instantiated and registered.
@@ -146,13 +146,13 @@ composer test
 ### Adding an Artisan Command
 
 1. Create the command class in `src/Console/`.
-2. Register it in `OwlstackServiceProvider::boot()` using `$this->commands([...])`.
+2. Register it in `FopostSocialServiceProvider::boot()` using `$this->commands([...])`.
 3. Add tests in `tests/Feature/`.
 
 ### Adding a New Config Key
 
-1. Add the key to `config/owlstack.php` with a sensible default.
-2. Read it in `OwlstackServiceProvider` when building the relevant service.
+1. Add the key to `config/fopost-social.php` with a sensible default.
+2. Read it in `FopostSocialServiceProvider` when building the relevant service.
 3. Document it in `README.md`.
 
 ### Adding Queue Support
@@ -163,7 +163,7 @@ composer test
 
 ## Things to Avoid
 
-- **Never** duplicate platform logic from `owlstack-core` — always delegate.
+- **Never** duplicate platform logic from `fopost-social-core` — always delegate.
 - **Never** hardcode API URLs or credentials.
 - **Never** commit real API tokens or `.env` files.
 - **Never** suppress errors with the `@` operator.

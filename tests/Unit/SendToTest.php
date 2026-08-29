@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Owlstack\Laravel\Tests\Unit;
+namespace Fopost\Social\Laravel\Tests\Unit;
 
-use Owlstack\Laravel\SendTo;
-use Owlstack\Laravel\Tests\TestCase;
+use Fopost\Social\Laravel\SendTo;
+use Fopost\Social\Laravel\Tests\TestCase;
 
 class SendToTest extends TestCase
 {
@@ -108,19 +108,19 @@ class SendToTest extends TestCase
     public function testTelegramWithSignature(): void
     {
         // Enable signature in config
-        $this->app['config']->set('owlstack.platforms.telegram.channel_signature', '— Test Bot');
+        $this->app['config']->set('fopost.platforms.telegram.channel_signature', '— Test Bot');
 
         // Re-register to pick up new config
-        $this->app->forgetInstance(\Owlstack\Core\Config\OwlstackConfig::class);
-        $this->app->forgetInstance(\Owlstack\Core\Platforms\PlatformRegistry::class);
-        $this->app->forgetInstance(\Owlstack\Core\Platforms\Telegram\TelegramPlatform::class);
-        $this->app->forgetInstance(\Owlstack\Core\Publishing\Publisher::class);
+        $this->app->forgetInstance(\Fopost\Social\Config\FopostConfig::class);
+        $this->app->forgetInstance(\Fopost\Social\Platforms\PlatformRegistry::class);
+        $this->app->forgetInstance(\Fopost\Social\Platforms\Telegram\TelegramPlatform::class);
+        $this->app->forgetInstance(\Fopost\Social\Publishing\Publisher::class);
         $this->app->forgetInstance(SendTo::class);
-        $this->app->forgetInstance('owlstack');
-        (new \Owlstack\Laravel\OwlstackServiceProvider($this->app))->register();
+        $this->app->forgetInstance('fopost-social');
+        (new \Fopost\Social\Laravel\FopostSocialServiceProvider($this->app))->register();
 
         // Re-bind the mock HTTP client after re-registration
-        $this->app->instance(\Owlstack\Core\Http\Contracts\HttpClientInterface::class, $this->httpClient);
+        $this->app->instance(\Fopost\Social\Http\Contracts\HttpClientInterface::class, $this->httpClient);
 
         $this->httpClient
             ->expects($this->once())
@@ -323,7 +323,7 @@ class SendToTest extends TestCase
             ->method('post')
             ->willReturn($this->telegramSuccess());
 
-        $post = new \Owlstack\Core\Content\Post(
+        $post = new \Fopost\Social\Content\Post(
             title: 'Direct Post',
             body: 'Published via Post object',
         );
@@ -348,7 +348,7 @@ class SendToTest extends TestCase
                 $this->linkedinSuccess(),
             );
 
-        $post = new \Owlstack\Core\Content\Post(
+        $post = new \Fopost\Social\Content\Post(
             title: 'Cross-platform',
             body: 'Post to all platforms',
         );
