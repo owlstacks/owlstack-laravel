@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Owlstack\Laravel\Facades;
+namespace Fopost\Social\Laravel\Facades;
 
 use Illuminate\Support\Facades\Facade;
-use Owlstack\Core\Content\Post;
-use Owlstack\Core\Publishing\PublishResult;
+use Fopost\Social\Content\Post;
+use Fopost\Social\Publishing\PublishResult;
 
 /**
- * Owlstack Facade.
+ * Fopost Facade.
  *
  * @method static PublishResult telegram(string $message, ?array $attachment = null, array $inlineKeyboard = [], array $options = [])
  * @method static PublishResult twitter(string $message, ?array $media = null, array $options = [])
@@ -26,12 +26,12 @@ use Owlstack\Core\Publishing\PublishResult;
  * @method static PublishResult publish(Post $post, string $platform, array $options = [])
  * @method static array<string, PublishResult> toAll(Post $post, array $options = [])
  *
- * @see \Owlstack\Laravel\SendTo
+ * @see \Fopost\Social\Laravel\SendTo
  */
-class Owlstack extends Facade
+class FopostSocial extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return 'owlstack';
+        return 'fopost-social';
     }
 }

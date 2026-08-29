@@ -8,8 +8,8 @@ Before you start, read the **README.md** file for info on the project and how to
 
 Before you post any issue or pull request, search [the issues][issues] and [the pull requests][pulls] to see if it has already been addressed. 
 
-[issues]: https://github.com/alihesari/owlstack-laravel/issues
-[pulls]: https://github.com/alihesari/owlstack-laravel/pulls
+[issues]: https://github.com/alihesari/fopost-social-laravel/issues
+[pulls]: https://github.com/alihesari/fopost-social-laravel/pulls
 
 Here are some best practices that will help us accept/address pull requests and issues:
 
@@ -21,7 +21,7 @@ Here are some best practices that will help us accept/address pull requests and 
 
 Fork, then clone the repo:
 
-    git clone git@github.com:your-username/owlstack-laravel.git
+    git clone git@github.com:your-username/fopost-social-laravel.git
 
 Install dependencies and run the tests:
 
@@ -30,6 +30,6 @@ Install dependencies and run the tests:
 
 Make your changes and push to your fork and [submit a pull request][pr].
 
-[pr]: https://github.com/alihesari/owlstack-laravel/compare
+[pr]: https://github.com/alihesari/fopost-social-laravel/compare
 
 At this point you're waiting on us. We may suggest some changes or improvements or alternatives.

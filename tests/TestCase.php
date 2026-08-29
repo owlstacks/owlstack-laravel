@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Owlstack\Laravel\Tests;
+namespace Fopost\Social\Laravel\Tests;
 
 use Orchestra\Testbench\TestCase as BaseTestCase;
-use Owlstack\Core\Http\Contracts\HttpClientInterface;
-use Owlstack\Laravel\OwlstackServiceProvider;
+use Fopost\Social\Http\Contracts\HttpClientInterface;
+use Fopost\Social\Laravel\FopostSocialServiceProvider;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -24,14 +24,14 @@ abstract class TestCase extends BaseTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            OwlstackServiceProvider::class,
+            FopostSocialServiceProvider::class,
         ];
     }
 
     protected function getEnvironmentSetUp($app): void
     {
         // Configure all platforms with test credentials
-        $app['config']->set('owlstack.platforms.telegram', [
+        $app['config']->set('fopost.platforms.telegram', [
             'api_token' => 'test-token-123',
             'bot_username' => 'test_bot',
             'channel_username' => '@test_channel',
@@ -39,14 +39,14 @@ abstract class TestCase extends BaseTestCase
             'parse_mode' => 'HTML',
         ]);
 
-        $app['config']->set('owlstack.platforms.twitter', [
+        $app['config']->set('fopost.platforms.twitter', [
             'consumer_key' => 'test_consumer_key',
             'consumer_secret' => 'test_consumer_secret',
             'access_token' => 'test_access_token',
             'access_token_secret' => 'test_access_token_secret',
         ]);
 
-        $app['config']->set('owlstack.platforms.facebook', [
+        $app['config']->set('fopost.platforms.facebook', [
             'app_id' => 'test_app_id',
             'app_secret' => 'test_app_secret',
             'page_access_token' => 'test_page_token',
@@ -54,7 +54,7 @@ abstract class TestCase extends BaseTestCase
             'default_graph_version' => 'v21.0',
         ]);
 
-        $app['config']->set('owlstack.platforms.linkedin', [
+        $app['config']->set('fopost.platforms.linkedin', [
             'access_token' => 'test_linkedin_token',
             'person_id' => 'test_person_id',
             'organization_id' => '',

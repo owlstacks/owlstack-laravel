@@ -27,7 +27,7 @@
             ]
         },
         {
-            "name": "Debug Owlstack Package",
+            "name": "Debug Fopost Package",
             "type": "php",
             "request": "launch",
             "program": "${workspaceFolder}/examples/laravel-12/artisan",

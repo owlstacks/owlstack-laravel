@@ -1,8 +1,8 @@
 <p align="center">
-  <a href="https://owlstack.dev">
+  <a href="https://fopost.com">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/owlstacks/owlstack-docs/refs/heads/main/static/img/logo-light-transparent.png">
-      <img src="https://raw.githubusercontent.com/owlstacks/owlstack-docs/refs/heads/main/static/img/logo-dark-transparent.png" alt="Owlstack" height="200px">
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/fopost/fopost-docs/refs/heads/main/static/img/logo-light-transparent.png">
+      <img src="https://raw.githubusercontent.com/fopost/fopost-docs/refs/heads/main/static/img/logo-dark-transparent.png" alt="Fopost" height="200px">
     </picture>
   </a>
 </p>
@@ -12,22 +12,22 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/owlstacks/owlstack-laravel/actions/workflows/tests.yml"><img src="https://img.shields.io/github/actions/workflow/status/owlstacks/owlstack-laravel/tests.yml?branch=master&style=flat-square&label=tests" alt="Tests"></a>
-  <a href="https://packagist.org/packages/owlstack/owlstack-laravel"><img src="https://img.shields.io/packagist/v/owlstack/owlstack-laravel.svg?style=flat-square" alt="Latest Version"></a>
-  <a href="https://packagist.org/packages/owlstack/owlstack-laravel"><img src="https://img.shields.io/packagist/dt/owlstack/owlstack-laravel.svg?style=flat-square" alt="Total Downloads"></a>
-  <a href="https://packagist.org/packages/owlstack/owlstack-laravel"><img src="https://img.shields.io/packagist/php-v/owlstack/owlstack-laravel.svg?style=flat-square" alt="PHP Version"></a>
-  <a href="https://packagist.org/packages/owlstack/owlstack-laravel"><img src="https://img.shields.io/badge/laravel-10.x%20|%2011.x%20|%2012.x-FF2D20?style=flat-square&logo=laravel&logoColor=white" alt="Laravel Version"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/packagist/l/owlstack/owlstack-laravel.svg?style=flat-square" alt="License"></a>
-  <a href="https://github.com/owlstacks/owlstack-laravel"><img src="https://img.shields.io/github/stars/owlstacks/owlstack-laravel?style=flat-square" alt="GitHub Stars"></a>
+  <a href="https://github.com/fopost/social-laravel/actions/workflows/tests.yml"><img src="https://img.shields.io/github/actions/workflow/status/fopost/social-laravel/tests.yml?branch=master&style=flat-square&label=tests" alt="Tests"></a>
+  <a href="https://packagist.org/packages/fopost/social-laravel"><img src="https://img.shields.io/packagist/v/fopost/social-laravel.svg?style=flat-square" alt="Latest Version"></a>
+  <a href="https://packagist.org/packages/fopost/social-laravel"><img src="https://img.shields.io/packagist/dt/fopost/social-laravel.svg?style=flat-square" alt="Total Downloads"></a>
+  <a href="https://packagist.org/packages/fopost/social-laravel"><img src="https://img.shields.io/packagist/php-v/fopost/social-laravel.svg?style=flat-square" alt="PHP Version"></a>
+  <a href="https://packagist.org/packages/fopost/social-laravel"><img src="https://img.shields.io/badge/laravel-10.x%20|%2011.x%20|%2012.x-FF2D20?style=flat-square&logo=laravel&logoColor=white" alt="Laravel Version"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/packagist/l/fopost/social-laravel.svg?style=flat-square" alt="License"></a>
+  <a href="https://github.com/fopost/social-laravel"><img src="https://img.shields.io/github/stars/fopost/social-laravel?style=flat-square" alt="GitHub Stars"></a>
 </p>
 
 ---
 
-# Owlstack for Laravel
+# Fopost for Laravel
 
-Laravel integration for [Owlstack Core](https://github.com/owlstacks/owlstack-core) — publish content to **11 social media platforms** (Telegram, X/Twitter, Facebook, LinkedIn, Instagram, Discord, Slack, Reddit, Pinterest, WhatsApp, and Tumblr) from your Laravel application.
+Laravel integration for [Fopost Core](https://github.com/fopost/social-core) — publish content to **11 social media platforms** (Telegram, X/Twitter, Facebook, LinkedIn, Instagram, Discord, Slack, Reddit, Pinterest, WhatsApp, and Tumblr) from your Laravel application.
 
-> **Note:** This package was previously `alihesari/larasap`. It has been rewritten from scratch to use `owlstack/owlstack-core` as its engine.
+> **Note:** This package was previously `alihesari/larasap`. It has been rewritten from scratch to use `fopost/social-core` as its engine.
 
 ## Requirements
 
@@ -37,13 +37,13 @@ Laravel integration for [Owlstack Core](https://github.com/owlstacks/owlstack-co
 ## Installation
 
 ```bash
-composer require owlstack/owlstack-laravel
+composer require fopost/social-laravel
 ```
 
 Publish the config file:
 
 ```bash
-php artisan vendor:publish --tag=owlstack-config
+php artisan vendor:publish --tag=fopost-config
 ```
 
 ## Configuration
@@ -108,9 +108,9 @@ TUMBLR_ACCESS_TOKEN=your-access-token
 TUMBLR_BLOG_IDENTIFIER=your-blog.tumblr.com
 
 # Proxy (optional — for restricted networks)
-OWLSTACK_PROXY_HOST=localhost
-OWLSTACK_PROXY_PORT=9050
-OWLSTACK_PROXY_TYPE=7
+FOPOST_PROXY_HOST=localhost
+FOPOST_PROXY_PORT=9050
+FOPOST_PROXY_TYPE=7
 ```
 
 Only platforms with valid credentials are registered. If you leave Twitter credentials empty, only Telegram and Facebook will be available.
@@ -120,7 +120,7 @@ Only platforms with valid credentials are registered. If you leave Twitter crede
 ### Via Dependency Injection (recommended)
 
 ```php
-use Owlstack\Laravel\SendTo;
+use Fopost\Social\Laravel\SendTo;
 
 class PostController extends Controller
 {
@@ -178,16 +178,16 @@ class PostController extends Controller
 ### Via Facade
 
 ```php
-use Owlstack\Laravel\Facades\Owlstack;
+use Fopost\Social\Laravel\Facades\FopostSocial;
 
-Owlstack::telegram('Hello from the facade!');
-Owlstack::twitter('Tweet from the facade!');
-Owlstack::linkedin('Post from the facade!');
+FopostSocial::telegram('Hello from the facade!');
+FopostSocial::twitter('Tweet from the facade!');
+FopostSocial::linkedin('Post from the facade!');
 ```
 
 ### Return Value
 
-All methods return a `Owlstack\Core\Publishing\PublishResult`:
+All methods return a `Fopost\Social\Publishing\PublishResult`:
 
 ```php
 $result = $sendTo->telegram('Hello!');
@@ -402,12 +402,12 @@ $sendTo->tumblr('Photo post', [
 
 ### Using Post Objects Directly
 
-For full control, create `Owlstack\Core\Content\Post` objects:
+For full control, create `Fopost\Social\Content\Post` objects:
 
 ```php
-use Owlstack\Core\Content\Post;
-use Owlstack\Core\Content\Media;
-use Owlstack\Core\Content\MediaCollection;
+use Fopost\Social\Content\Post;
+use Fopost\Social\Content\Media;
+use Fopost\Social\Content\MediaCollection;
 
 $post = new Post(
     title: 'My Article',
@@ -431,13 +431,13 @@ $results = $sendTo->toAll($post);
 
 The package dispatches events through Laravel's event system:
 
-- `Owlstack\Core\Events\PostPublished` — fired on successful publish
-- `Owlstack\Core\Events\PostFailed` — fired on publish failure
+- `Fopost\Social\Events\PostPublished` — fired on successful publish
+- `Fopost\Social\Events\PostFailed` — fired on publish failure
 
 ```php
 // In EventServiceProvider or via Event::listen()
-use Owlstack\Core\Events\PostPublished;
-use Owlstack\Core\Events\PostFailed;
+use Fopost\Social\Events\PostPublished;
+use Fopost\Social\Events\PostFailed;
 
 Event::listen(PostPublished::class, function (PostPublished $event) {
     Log::info("Published to {$event->result->platformName}", [
@@ -454,23 +454,23 @@ Event::listen(PostFailed::class, function (PostFailed $event) {
 
 ## Architecture
 
-This package is a thin wrapper around `owlstack/owlstack-core`. The architecture:
+This package is a thin wrapper around `fopost/social-core`. The architecture:
 
 ```
 Your Laravel App
-    └── Owlstack\Laravel\SendTo (or Facade)
-        └── Owlstack\Core\Publishing\Publisher
-            └── Owlstack\Core\Platforms\{Telegram,Twitter,Facebook,LinkedIn,...}Platform
-                └── Owlstack\Core\Http\HttpClient (cURL)
+    └── Fopost\Social\Laravel\SendTo (or Facade)
+        └── Fopost\Social\Publishing\Publisher
+            └── Fopost\Social\Platforms\{Telegram,Twitter,Facebook,LinkedIn,...}Platform
+                └── Fopost\Social\Http\HttpClient (cURL)
 ```
 
 The service provider wires everything together:
-- `OwlstackConfig` — built from `config/owlstack.php`
+- `FopostConfig` — built from `config/fopost-social.php`
 - `HttpClient` — core's cURL client (with optional proxy)
 - Platform instances — only registered if credentials are configured
 - `PlatformRegistry` — holds all active platforms
 - `Publisher` — orchestrates publishing with event dispatch
-- `SendTo` — high-level API bound as `'owlstack'` singleton
+- `SendTo` — high-level API bound as `'fopost-social'` singleton
 
 ## Testing
 
@@ -483,7 +483,7 @@ Or run PHPUnit directly:
 In your own tests, mock `HttpClientInterface` on the container:
 
 ```php
-use Owlstack\Core\Http\Contracts\HttpClientInterface;
+use Fopost\Social\Http\Contracts\HttpClientInterface;
 
 $mock = $this->createMock(HttpClientInterface::class);
 $mock->method('post')->willReturn([
@@ -499,10 +499,10 @@ $this->app->instance(HttpClientInterface::class, $mock);
 
 If upgrading from the old package:
 
-1. Replace `alihesari/larasap` with `owlstack/owlstack-laravel` in `composer.json`
-2. Rename `config/larasap.php` → `config/owlstack.php` (see new format above)
-3. Replace `Alihesari\Larasap\SendTo` with `Owlstack\Laravel\SendTo`
-4. Replace static calls (`SendTo::telegram(...)`) with DI or the new `Owlstack` facade
+1. Replace `alihesari/larasap` with `fopost/social-laravel` in `composer.json`
+2. Rename `config/larasap.php` → `config/fopost-social.php` (see new format above)
+3. Replace `Alihesari\Larasap\SendTo` with `Fopost\Social\Laravel\SendTo`
+4. Replace static calls (`SendTo::telegram(...)`) with DI or the new `Fopost` facade
 5. Update event listeners if you had custom ones
 6. The `facebook/graph-sdk` and `facebook/php-business-sdk` dependencies are no longer needed
 

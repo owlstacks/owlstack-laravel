@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Owlstack\Laravel\Events;
+namespace Fopost\Social\Laravel\Events;
 
 use Illuminate\Contracts\Events\Dispatcher;
-use Owlstack\Core\Events\Contracts\EventDispatcherInterface;
+use Fopost\Social\Events\Contracts\EventDispatcherInterface;
 
 /**
- * Bridges Owlstack Core's EventDispatcherInterface to Laravel's event dispatcher.
+ * Bridges Fopost Core's EventDispatcherInterface to Laravel's event dispatcher.
  *
  * This allows core events (PostPublished, PostFailed) to be dispatched
  * through Laravel's event system, enabling standard Laravel listeners.

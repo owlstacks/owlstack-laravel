@@ -20,8 +20,8 @@ A clear and concise description of the issue or feature request.
 
 - PHP version:
 - Laravel version:
-- Owlstack Laravel version:
-- Owlstack Core version:
+- Fopost Laravel version:
+- Fopost Core version:
 - Platform(s) affected:
 
 ## Additional Context

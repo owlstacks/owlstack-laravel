@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Owlstack\Laravel\Tests\Feature;
+namespace Fopost\Social\Laravel\Tests\Feature;
 
 use Illuminate\Support\Facades\Event;
-use Owlstack\Core\Events\PostPublished;
-use Owlstack\Core\Events\PostFailed;
-use Owlstack\Core\Content\Post;
-use Owlstack\Laravel\Facades\Owlstack;
-use Owlstack\Laravel\SendTo;
-use Owlstack\Laravel\Tests\TestCase;
+use Fopost\Social\Events\PostPublished;
+use Fopost\Social\Events\PostFailed;
+use Fopost\Social\Content\Post;
+use Fopost\Social\Laravel\Facades\FopostSocial;
+use Fopost\Social\Laravel\SendTo;
+use Fopost\Social\Laravel\Tests\TestCase;
 
 class PublishingTest extends TestCase
 {
@@ -21,7 +21,7 @@ class PublishingTest extends TestCase
             ->method('post')
             ->willReturn($this->telegramSuccess());
 
-        $result = Owlstack::telegram('Via facade');
+        $result = FopostSocial::telegram('Via facade');
 
         $this->assertTrue($result->success);
     }
@@ -90,7 +90,7 @@ class PublishingTest extends TestCase
         $post = new Post(
             title: 'Full Workflow Title',
             body: 'Full workflow body text for testing.',
-            tags: ['owlstack', 'test'],
+            tags: ['fopost', 'test'],
         );
 
         /** @var SendTo $sendTo */

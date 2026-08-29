@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Owlstack\Core\Content\Post;
-use Owlstack\Laravel\Facades\Owlstack;
-use Owlstack\Laravel\SendTo;
+use Fopost\Social\Content\Post;
+use Fopost\Social\Laravel\Facades\FopostSocial;
+use Fopost\Social\Laravel\SendTo;
 
 class SocialMediaController extends Controller
 {
@@ -80,7 +80,7 @@ class SocialMediaController extends Controller
             title: 'Cross-Platform Test',
             body: 'Test post from Laravel 12 to all platforms.',
             url: 'https://example.com',
-            tags: ['laravel', 'owlstack'],
+            tags: ['laravel', 'fopost'],
         );
 
         $results = $sendTo->toAll($post);
@@ -99,7 +99,7 @@ class SocialMediaController extends Controller
      */
     public function testFacade()
     {
-        $result = Owlstack::telegram('Hello from the Owlstack facade!');
+        $result = FopostSocial::telegram('Hello from the Fopost facade!');
 
         return response()->json([
             'success' => $result->success,

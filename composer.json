@@ -1,11 +1,11 @@
 {
-    "name": "owlstack/owlstack-laravel",
-    "description": "Laravel integration for Owlstack — publish content to Telegram, X (Twitter), Facebook, LinkedIn, Instagram, Discord, Slack, Reddit, Pinterest, WhatsApp, and Tumblr from your Laravel application.",
+    "name": "fopost/social-laravel",
+    "description": "Laravel integration for Fopost — publish content to Telegram, X (Twitter), Facebook, LinkedIn, Instagram, Discord, Slack, Reddit, Pinterest, WhatsApp, and Tumblr from your Laravel application.",
     "type": "library",
     "license": "MIT",
     "keywords": [
         "laravel",
-        "owlstack",
+        "fopost",
         "social-media",
         "telegram",
         "twitter",
@@ -30,14 +30,14 @@
             "role": "Developer"
         }
     ],
-    "homepage": "https://github.com/alihesari/owlstack-laravel",
+    "homepage": "https://github.com/alihesari/fopost-social-laravel",
     "support": {
-        "issues": "https://github.com/alihesari/owlstack-laravel/issues",
-        "source": "https://github.com/alihesari/owlstack-laravel"
+        "issues": "https://github.com/alihesari/fopost-social-laravel/issues",
+        "source": "https://github.com/alihesari/fopost-social-laravel"
     },
     "require": {
         "php": "^8.1",
-        "owlstack/owlstack-core": "^1.0",
+        "fopost/social-core": "^1.0",
         "illuminate/support": "^10.0|^11.0|^12.0|^13.0",
         "illuminate/contracts": "^10.0|^11.0|^12.0|^13.0"
     },
@@ -47,21 +47,21 @@
     },
     "autoload": {
         "psr-4": {
-            "Owlstack\\Laravel\\": "src/"
+            "Fopost\\Social\\Laravel\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Owlstack\\Laravel\\Tests\\": "tests/"
+            "Fopost\\Social\\Laravel\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Owlstack\\Laravel\\OwlstackServiceProvider"
+                "Fopost\\Social\\Laravel\\FopostSocialServiceProvider"
             ],
             "aliases": {
-                "Owlstack": "Owlstack\\Laravel\\Facades\\Owlstack"
+                "FopostSocial": "Fopost\\Social\\Laravel\\Facades\\FopostSocial"
             }
         }
     },

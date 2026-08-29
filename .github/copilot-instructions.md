@@ -1,10 +1,10 @@
-You are working on **owlstack-laravel**, a Laravel integration package for the Owlstack social media publishing platform.
+You are working on **fopost-social-laravel**, a Laravel integration package for the Fopost social media publishing platform.
 
 ## Key Facts
 
-- This is a **thin wrapper** around `owlstack/owlstack-core`. All platform logic, formatting, and HTTP transport live in the core package.
+- This is a **thin wrapper** around `fopost/social-core`. All platform logic, formatting, and HTTP transport live in the core package.
 - Supports Laravel 10.x, 11.x, and 12.x with PHP 8.1+.
-- Namespace: `Owlstack\Laravel\`
+- Namespace: `Fopost\Social\Laravel\`
 - Uses Orchestra Testbench for testing.
 
 ## Code Conventions
@@ -17,19 +17,19 @@ You are working on **owlstack-laravel**, a Laravel integration package for the O
 
 ## Architecture
 
-- `OwlstackServiceProvider` registers all core services into the Laravel container.
+- `FopostSocialServiceProvider` registers all core services into the Laravel container.
 - `SendTo` is the high-level API — methods like `telegram()`, `twitter()`, `facebook()`.
-- `Owlstack` facade proxies to `SendTo`.
+- `Fopost` facade proxies to `SendTo`.
 - `LaravelEventDispatcher` bridges core events to Laravel's event system.
-- Config lives in `config/owlstack.php`, populated from `.env`.
+- Config lives in `config/fopost-social.php`, populated from `.env`.
 
 ## Rules
 
-- Never duplicate platform logic from owlstack-core.
+- Never duplicate platform logic from fopost-social-core.
 - Never hardcode API URLs or credentials.
 - Never commit real API tokens.
 - Never use `dd()`, `var_dump`, or `print_r` in production code.
-- Platform-specific changes belong in owlstack-core, not here.
+- Platform-specific changes belong in fopost-social-core, not here.
 - Laravel-specific features (artisan, queues, middleware) belong here.
 
 ## Testing

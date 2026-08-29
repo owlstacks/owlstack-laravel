@@ -8,6 +8,10 @@ return [
     |--------------------------------------------------------------------------
     | Platform Configurations
     |--------------------------------------------------------------------------
+    |
+    | Configure credentials and settings for each social media platform.
+    | Only platforms with credentials will be registered in the PlatformRegistry.
+    |
     */
 
     'platforms' => [
@@ -33,12 +37,6 @@ return [
             'page_access_token' => env('FACEBOOK_PAGE_ACCESS_TOKEN', ''),
             'page_id' => env('FACEBOOK_PAGE_ID', ''),
             'default_graph_version' => env('FACEBOOK_GRAPH_VERSION', 'v21.0'),
-        ],
-
-        'linkedin' => [
-            'access_token' => env('LINKEDIN_ACCESS_TOKEN', ''),
-            'person_id' => env('LINKEDIN_PERSON_ID', ''),
-            'organization_id' => env('LINKEDIN_ORGANIZATION_ID', ''),
         ],
 
         'reddit' => [
@@ -79,20 +77,30 @@ return [
             'blog_identifier' => env('TUMBLR_BLOG_IDENTIFIER', ''),
         ],
 
+        'linkedin' => [
+            'access_token' => env('LINKEDIN_ACCESS_TOKEN', ''),
+            'person_id' => env('LINKEDIN_PERSON_ID', ''),
+            'organization_id' => env('LINKEDIN_ORGANIZATION_ID', ''),
+        ],
+
     ],
 
     /*
     |--------------------------------------------------------------------------
     | Proxy Configuration
     |--------------------------------------------------------------------------
+    |
+    | Set proxy for servers that cannot access social networks directly
+    | (e.g., due to sanctions or network restrictions).
+    |
     */
 
     'proxy' => [
-        'type' => env('OWLSTACK_PROXY_TYPE', ''),
-        'hostname' => env('OWLSTACK_PROXY_HOST', ''),
-        'port' => env('OWLSTACK_PROXY_PORT', ''),
-        'username' => env('OWLSTACK_PROXY_USERNAME', ''),
-        'password' => env('OWLSTACK_PROXY_PASSWORD', ''),
+        'type' => env('FOPOST_PROXY_TYPE', ''),          // 7 for SOCKS5
+        'hostname' => env('FOPOST_PROXY_HOST', ''),       // e.g. localhost
+        'port' => env('FOPOST_PROXY_PORT', ''),           // e.g. 9050
+        'username' => env('FOPOST_PROXY_USERNAME', ''),
+        'password' => env('FOPOST_PROXY_PASSWORD', ''),
     ],
 
 ];
