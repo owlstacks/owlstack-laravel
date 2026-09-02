@@ -40,6 +40,8 @@ jobs:
 
       - name: Install dependencies
         run: |
+          # EOL Laravel releases carry unpatched advisories; Composer blocks them by default
+          composer config policy.advisories.block false || composer config audit.block-insecure false
           composer require "illuminate/support:${{ matrix.laravel }}" "illuminate/contracts:${{ matrix.laravel }}" --no-interaction --no-update
           composer install --prefer-dist --no-interaction --no-progress
 
