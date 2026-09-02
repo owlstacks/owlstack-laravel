@@ -1,31 +1,24 @@
-<p align="center">
-  <a href="https://fopost.com">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/fopost/fopost-docs/refs/heads/main/static/img/logo-light-transparent.png">
-      <img src="https://raw.githubusercontent.com/fopost/fopost-docs/refs/heads/main/static/img/logo-dark-transparent.png" alt="Fopost" height="200px">
-    </picture>
-  </a>
-</p>
+<h1 align="center">
+  <a href="https://fopost.com">FoPost for Laravel</a>
+</h1>
 
 <p align="center">
   <strong>Laravel integration for social media publishing</strong>
 </p>
 
 <p align="center">
-  <a href="https://github.com/fopost/social-laravel/actions/workflows/tests.yml"><img src="https://img.shields.io/github/actions/workflow/status/fopost/social-laravel/tests.yml?branch=master&style=flat-square&label=tests" alt="Tests"></a>
+  <a href="https://github.com/fopost/fopost-social-laravel/actions/workflows/tests.yml"><img src="https://img.shields.io/github/actions/workflow/status/fopost/fopost-social-laravel/tests.yml?branch=master&style=flat-square&label=tests" alt="Tests"></a>
   <a href="https://packagist.org/packages/fopost/social-laravel"><img src="https://img.shields.io/packagist/v/fopost/social-laravel.svg?style=flat-square" alt="Latest Version"></a>
   <a href="https://packagist.org/packages/fopost/social-laravel"><img src="https://img.shields.io/packagist/dt/fopost/social-laravel.svg?style=flat-square" alt="Total Downloads"></a>
   <a href="https://packagist.org/packages/fopost/social-laravel"><img src="https://img.shields.io/packagist/php-v/fopost/social-laravel.svg?style=flat-square" alt="PHP Version"></a>
   <a href="https://packagist.org/packages/fopost/social-laravel"><img src="https://img.shields.io/badge/laravel-10.x%20|%2011.x%20|%2012.x-FF2D20?style=flat-square&logo=laravel&logoColor=white" alt="Laravel Version"></a>
   <a href="LICENSE"><img src="https://img.shields.io/packagist/l/fopost/social-laravel.svg?style=flat-square" alt="License"></a>
-  <a href="https://github.com/fopost/social-laravel"><img src="https://img.shields.io/github/stars/fopost/social-laravel?style=flat-square" alt="GitHub Stars"></a>
+  <a href="https://github.com/fopost/fopost-social-laravel"><img src="https://img.shields.io/github/stars/fopost/fopost-social-laravel?style=flat-square" alt="GitHub Stars"></a>
 </p>
 
 ---
 
-# Fopost for Laravel
-
-Laravel integration for [Fopost Core](https://github.com/fopost/social-core) — publish content to **11 social media platforms** (Telegram, X/Twitter, Facebook, LinkedIn, Instagram, Discord, Slack, Reddit, Pinterest, WhatsApp, and Tumblr) from your Laravel application.
+Laravel integration for [Fopost Core](https://github.com/fopost/fopost-social-core) — publish content to **11 social media platforms** (Telegram, X/Twitter, Facebook, LinkedIn, Instagram, Discord, Slack, Reddit, Pinterest, WhatsApp, and Tumblr) from your Laravel application.
 
 > **Note:** This package was previously `alihesari/larasap`. It has been rewritten from scratch to use `fopost/social-core` as its engine.
 
