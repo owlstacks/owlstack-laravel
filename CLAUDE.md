@@ -4,9 +4,9 @@ This file provides guidance for Claude, Cursor, and other AI assistants working 
 
 ## Project Overview
 
-**Fopost Laravel** is the official Laravel integration for the Fopost social media publishing platform. It wraps [Fopost Core](https://github.com/fopost/social-core) with Laravel-idiomatic services: a service provider, facade, config file, and event bridging.
+**Fopost Laravel** is the official Laravel integration for the Fopost social media publishing platform. It wraps [Fopost Core](https://github.com/fopost/fopost-social-core) with Laravel-idiomatic services: a service provider, facade, config file, and event bridging.
 
-- **Repository:** `fopost/social-laravel`
+- **Repository:** `fopost/fopost-social-laravel`
 - **Language:** PHP 8.1+
 - **Framework:** Laravel 10.x, 11.x, 12.x
 - **Core dependency:** `fopost/social-core` ^1.0
